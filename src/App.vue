@@ -1,7 +1,7 @@
 <template>
   <div>
     <img alt="Vue logo" src="./assets/logo.png" />
-    <hello-world></hello-world>
+    <hello-world>abc</hello-world>
   </div>
 </template>
 
@@ -12,9 +12,6 @@ import HelloWorld from './components/HelloWorld.vue'
 export default defineComponent({
   name: 'App',
   components: {
-
-
-    
     HelloWorld
   }
 })
