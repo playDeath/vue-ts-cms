@@ -112,7 +112,7 @@ h3 {
 }
 ul {
   list-style-type: none;
-  padding: 0;
+  padding: 20px;
 }
 li {
   display: inline-block;
