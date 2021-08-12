@@ -1,19 +1,23 @@
 <template>
   <div>
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <hello-world>abc</hello-world>
+    <router-link to="/home">home</router-link>
+    <router-link to="/login">login</router-link>
+    <router-view></router-view>
+    <el-button>按钮</el-button>
+    <el-button type="primary">主要按钮</el-button>
+    <el-button type="success">成功按钮</el-button>
+    <el-button type="info">信息按钮</el-button>
+    <el-button type="warning">警告按钮</el-button>
+    <el-button type="danger">危险按钮</el-button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
 
 export default defineComponent({
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  components: {}
 })
 </script>
 
