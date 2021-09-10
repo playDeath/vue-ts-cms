@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1></h1>
+    <h1>敬请期待</h1>
   </div>
 </template>
 
@@ -13,4 +13,4 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped></style>
+<style scoped lang="less"></style>

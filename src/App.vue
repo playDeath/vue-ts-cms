@@ -1,33 +1,24 @@
 <template>
   <div>
-    <router-link to="/home">home</router-link>
-    <router-link to="/login">login</router-link>
+    <!-- <login /> -->
     <router-view></router-view>
-    <el-button>按钮</el-button>
-    <el-button type="primary">主要按钮</el-button>
-    <el-button type="success">成功按钮</el-button>
-    <el-button type="info">信息按钮</el-button>
-    <el-button type="warning">警告按钮</el-button>
-    <el-button type="danger">危险按钮</el-button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+// import login from '@/views/login/login.vue'
+// import home from '@/views/home/home.vue'
 
 export default defineComponent({
   name: 'App',
-  components: {}
+  components: {
+    // home
+    // login
+  },
+  setup() {
+    console.log('我还没被转化为真实Dom')
+  }
 })
 </script>
-
-<style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style lang="less"></style>

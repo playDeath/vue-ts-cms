@@ -1,18 +1,16 @@
 <template>
   <div>
-    <h1>login</h1>
+    <h1>edit</h1>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-
 export default defineComponent({
-  name: 'login',
+  name: '',
   setup() {
     return {}
   }
 })
 </script>
-
-<style scoped></style>
+<style scoped lang="less"></style>
