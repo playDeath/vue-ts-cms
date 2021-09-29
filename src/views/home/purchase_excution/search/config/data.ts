@@ -7,7 +7,7 @@ export const data = [
     phone: '50',
     method: '一票结算',
     person: '中能热电',
-    staus: '草稿'
+    staus: '已提交'
   },
   {
     number: 2,
@@ -17,7 +17,7 @@ export const data = [
     phone: '50',
     method: '一票结算',
     person: '中能热电',
-    staus: '草稿'
+    staus: '已发布'
   },
   {
     number: 3,
@@ -27,7 +27,7 @@ export const data = [
     phone: '50',
     method: '一票结算',
     person: '中能热电',
-    staus: '草稿'
+    staus: '已提交'
   },
   {
     number: 4,
@@ -37,7 +37,7 @@ export const data = [
     phone: '50',
     method: '一票结算',
     person: '中能热电',
-    staus: '草稿'
+    staus: '已发布'
   },
   {
     number: 5,
@@ -47,6 +47,6 @@ export const data = [
     phone: '50',
     method: '一票结算',
     person: '中能热电',
-    staus: '草稿'
+    staus: '已提交'
   }
 ]

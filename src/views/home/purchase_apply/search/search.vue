@@ -1,32 +1,35 @@
 <template>
   <div class="check">
     <div class="check-block">
-      <el-form ref="form" label-width="95px" class="form">
-        <el-form-item label="供应商名称:" class="form-item">
-          <el-input></el-input>
-        </el-form-item>
+      <el-form ref="form" label-width="95px" class="form" load>
+        <!-- <el-form-item label="供应商名称:" class="form-item">
+          <el-input disabled></el-input>
+        </el-form-item> -->
         <el-form-item label="采购单号:" class="form-item">
-          <el-input></el-input>
+          <el-input v-model="purchaseId"></el-input>
         </el-form-item>
         <el-form-item label="采购单状态:" class="form-item">
-          <el-dropdown>
+          <el-dropdown @command="changeSelector">
             <span class="el-dropdown-link">
-              全部<i class="el-icon-arrow-down el-icon--right"></i>
+              {{ selector }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="a">全部</el-dropdown-item>
-                <el-dropdown-item command="b">草稿</el-dropdown-item>
-                <el-dropdown-item command="c">审核中</el-dropdown-item>
-                <el-dropdown-item command="c">已驳回</el-dropdown-item>
-                <el-dropdown-item command="c">已发布</el-dropdown-item>
+                <el-dropdown-item
+                  v-for="item in selectors"
+                  :key="item"
+                  :command="item"
+                  >{{ item }}</el-dropdown-item
+                >
               </el-dropdown-menu>
             </template>
           </el-dropdown>
         </el-form-item>
 
         <el-form-item class="form-item">
-          <el-button type="primary" size="medium">查询</el-button>
+          <el-button type="primary" size="medium" @click="searchByCondition"
+            >查询</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -37,12 +40,45 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed, watch, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
+import { selectors } from './config/data'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup() {
-    return {}
+    const store = useStore()
+    const purchaseId = ref('')
+    watch(
+      purchaseId,
+      (id) => {
+        store.commit('purchaseApply/setPurchaseId', id)
+      },
+      {
+        deep: true
+      }
+    )
+    let selector = computed(() => store.state.purchaseApply.selector)
+    const changeSelector = (item: string) => {
+      store.commit('purchaseApply/setSelector', item)
+    }
+    const searchByCondition = () => {
+      store.dispatch('purchaseApply/getPurchasePlanListByCondition', {
+        current: 0,
+        size: 5,
+        bodyParams: {
+          purchaseId: purchaseId.value,
+          state: selector.value === '全部' ? '' : selector.value
+        }
+      })
+    }
+    return {
+      selector,
+      changeSelector,
+      selectors,
+      purchaseId,
+      searchByCondition
+    }
   },
   components: {
     checkTable
@@ -59,6 +95,7 @@ export default defineComponent({
       display: flex;
       padding-top: 1rem;
       padding-left: 1rem;
+      flex-wrap: nowrap;
       .form-item {
         display: flex;
         align-items: center;
@@ -74,6 +111,7 @@ export default defineComponent({
     }
   }
   .check-table {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;

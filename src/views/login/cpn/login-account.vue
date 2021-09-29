@@ -15,10 +15,15 @@
       <el-form-item label="密码" prop="password">
         <el-input v-model="account.password" show-password></el-input>
       </el-form-item>
-      <el-form-item label="验证码" prop="verifyCode">
+      <el-form-item label="验证码" prop="code">
         <div class="getcode">
-          <el-input v-model="account.verifyCode"></el-input>
-          <el-button type="primary" class="getbtn">获取验证码</el-button>
+          <el-input v-model="account.code"></el-input>
+          <img
+            :src="verify_code"
+            alt="验证码"
+            class="verify_code"
+            @click="getImage"
+          />
         </div>
       </el-form-item>
     </el-form>
@@ -30,25 +35,79 @@ import { defineComponent, reactive, ref } from 'vue'
 import { rules } from '../config/login-config'
 import { ElForm } from 'element-plus'
 import CacheControl from '@/utils/cache'
+import { commonRequest } from '@/network/index'
+import { ElMessage } from 'element-plus'
+import type { DataType } from '../config/login-config'
+import { useStore } from 'vuex'
+import { setDynamicRouter } from '@/store/index'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: '',
-  setup() {
+  props: {
+    verify_code: {
+      type: String,
+      default: ''
+    }
+  },
+  setup(props, ctx) {
+    const store = useStore()
+    const router = useRouter()
     const account = reactive({
       username: CacheControl.getCache('username') ?? '',
       password: CacheControl.getCache('password') ?? '',
-      verifycode: ''
+      code: ''
     })
+    const getImage = () => {
+      ctx.emit('getVerifyCode')
+    }
     const formRef = ref<InstanceType<typeof ElForm>>()
+    // 发起登录请求
     const loginAccountAction = (keepPassword: boolean) => {
       formRef.value?.validate((flag) => {
         if (flag) {
-          if (keepPassword) {
-            CacheControl.setCache('username', account.username)
-            CacheControl.setCache('password', account.password)
-          } else {
-            CacheControl.deleteCache('username')
-            CacheControl.deleteCache('password')
-          }
+          commonRequest
+            .request<DataType>({
+              url: `/login?username=${account.username}&password=${account.password}&code=${account.code}&key=key`,
+              method: 'POST'
+            })
+            .then((res) => {
+              if (res.data.status === 200) {
+                ElMessage.success('登录成功!')
+                if (keepPassword) {
+                  CacheControl.setCache('username', account.username)
+                  CacheControl.setCache('password', account.password)
+                  CacheControl.setCache('token', res.headers.authorization)
+                  CacheControl.setCache('userMenus', res.data.data)
+                  CacheControl.setCache('userInfo', account.username)
+                  store.commit(
+                    'loginModule/setToken',
+                    res.headers.authorization
+                  )
+                  store.commit('loginModule/setUserInfo', {
+                    username: account.username
+                  })
+                  store.commit('loginModule/setUserMenus', res.data.data)
+                  setDynamicRouter()
+                  router.replace({
+                    path: '/home'
+                  })
+                } else {
+                  CacheControl.deleteCache('username')
+                  CacheControl.deleteCache('password')
+                }
+              } else {
+                console.log(res.data.msg)
+
+                ElMessage.error(res.data.msg)
+                ctx.emit('getNewImage')
+              }
+            })
+            .catch((error) => {
+              console.log(error)
+
+              ElMessage.error(error)
+              ctx.emit('getNewImage')
+            })
         }
       })
     }
@@ -56,7 +115,8 @@ export default defineComponent({
       account,
       rules,
       loginAccountAction,
-      formRef
+      formRef,
+      getImage
     }
   }
 })
@@ -71,5 +131,11 @@ export default defineComponent({
 }
 .getbtn {
   margin-left: 1rem;
+}
+.verify_code {
+  margin-left: 10px;
+  width: 100px;
+  height: 40px;
+  color: gray;
 }
 </style>

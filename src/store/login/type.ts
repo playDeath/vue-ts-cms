@@ -4,4 +4,10 @@ interface menuItemType {
   authority_name: string
   children?: []
 }
-export { menuItemType }
+interface loginInfoType {
+  token: string
+  userInfo: any
+  userMenus: Array<any>
+  MapTable?: Array<any>
+}
+export { menuItemType, loginInfoType }

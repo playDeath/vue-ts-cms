@@ -28,12 +28,19 @@ import { defineComponent, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import emitter from '@/utils/eventBus'
+import CacheControl from '@/utils/cache'
 export default defineComponent({
   setup() {
     const store = useStore()
     const router = useRouter()
-    const name = computed(() => store.state.loginModule.userInfo.name)
+    const name = computed(() => store.state.loginModule.userInfo.username)
     const exit = () => {
+      // 退出时清除localstorage中的数据
+      CacheControl.deleteCache('username')
+      CacheControl.deleteCache('password')
+      CacheControl.deleteCache('token')
+      CacheControl.deleteCache('userMenus')
+      CacheControl.deleteCache('userInfo')
       router.push('/login')
     }
     const showPersonInfo = () => {

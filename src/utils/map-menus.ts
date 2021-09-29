@@ -1,5 +1,5 @@
 import { RouteRecordRaw } from 'vue-router'
-
+import router from '@/router/index'
 let firstMenu: any = null
 
 export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
@@ -19,14 +19,14 @@ export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
   // type === 2 -> url -> route
   const _recurseGetRoute = (menus: any[]) => {
     for (const menu of menus) {
-      if (menu.type === 2) {
-        const route = allRoutes.find((route) => route.path === menu.url)
+      if (menu.authorityType === 2) {
+        const route = allRoutes.find((route) => route.path === menu.path)
         if (route) routes.push(route)
         if (!firstMenu) {
           firstMenu = menu
         }
       } else {
-        _recurseGetRoute(menu.children)
+        _recurseGetRoute(menu.childrenRolePermissions ?? [])
       }
     }
   }
@@ -36,15 +36,25 @@ export function mapMenusToRoutes(userMenus: any[]): RouteRecordRaw[] {
   return routes
 }
 // 在这里定义全局变量，如果是在函数里面定义，则递归时返回的结果不会被拿到，因为每次都会在函数里创建新的res_id
-let res_id = 2
+
 export function getCurrentMenuId(userMenu: any[], path: string): number {
-  for (const item of userMenu) {
-    if (item.type === 1) {
-      getCurrentMenuId(item.children ?? [], path)
-    } else if (item.type === 2 && item.url === path) {
-      res_id = item.id
+  let res_id = 2
+  if (path === '/home') {
+    if (userMenu[0].childrenRolePermissions[0].length !== 0) {
+      router.push(userMenu[0].childrenRolePermissions[0].path)
+      return userMenu[0].childrenRolePermissions[0].authorityId
     }
   }
+  function recur(userMenu: any[], path: string): void {
+    for (const item of userMenu) {
+      if (item.authorityType === 1) {
+        recur(item.childrenRolePermissions ?? [], path)
+      } else if (item.authorityType === 2 && item.path === path) {
+        res_id = item.authorityId
+      }
+    }
+  }
+  recur(userMenu, path)
   return res_id
 }
 // export function pathMapBreadcrumbs(userMenus: any[], currentPath: string) {

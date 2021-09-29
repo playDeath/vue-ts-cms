@@ -15,24 +15,33 @@
         type="text"
         size="small"
       >
-        查看
+        审核
       </el-button>
     </el-table-column>
   </el-table>
   <el-pagination background layout="prev, pager, next" :total="50">
   </el-pagination>
+  <el-dialog v-model="dialogTableVisible" title="供应商详细信息">
+    <detail-table @closeDialog="closeDialog"></detail-table>
+  </el-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { data } from '../config/data'
+import detailTable from './detailTable.vue'
 export default defineComponent({
   name: '',
   setup() {
     const tableData = data
+    const dialogTableVisible = ref(true)
     return {
-      tableData
+      tableData,
+      dialogTableVisible
     }
+  },
+  components: {
+    detailTable
   }
 })
 </script>

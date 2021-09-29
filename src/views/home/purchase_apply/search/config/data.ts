@@ -1,52 +1,73 @@
-export const data = [
+export const selectors = ['全部', '草稿', '提交', '审核', '驳回', '发布']
+export const coalTypes = [
   {
-    number: 1,
-    name: '中能热电-2015-06-015',
-    org_code: '2015-09-15',
-    legal_person: '烟煤',
-    phone: '50',
-    method: '一票结算',
-    person: '中能热电',
-    staus: '草稿'
+    value: '烟煤',
+    label: '烟煤'
   },
   {
-    number: 2,
-    name: '中能热电-2015-06-015',
-    org_code: '2015-09-15',
-    legal_person: '烟煤',
-    phone: '50',
-    method: '一票结算',
-    person: '中能热电',
-    staus: '草稿'
+    value: '无烟煤',
+    label: '无烟煤'
   },
   {
-    number: 3,
-    name: '中能热电-2015-06-015',
-    org_code: '2015-09-15',
-    legal_person: '烟煤',
-    phone: '50',
-    method: '一票结算',
-    person: '中能热电',
-    staus: '草稿'
+    value: '褐煤',
+    label: '褐煤'
   },
   {
-    number: 4,
-    name: '中能热电-2015-06-015',
-    org_code: '2015-09-15',
-    legal_person: '烟煤',
-    phone: '50',
-    method: '一票结算',
-    person: '中能热电',
-    staus: '草稿'
+    value: '贫瘦煤',
+    label: '贫瘦煤'
   },
   {
-    number: 5,
-    name: '中能热电-2015-06-015',
-    org_code: '2015-09-15',
-    legal_person: '烟煤',
-    phone: '50',
-    method: '一票结算',
-    person: '中能热电',
-    staus: '草稿'
+    value: '泥煤',
+    label: '泥煤'
+  },
+  {
+    value: '进口煤',
+    label: '进口煤'
+  },
+  {
+    value: '其他',
+    label: '其他'
+  }
+]
+export const TwoLevelCoalClass = [
+  {
+    value: '原煤',
+    label: '原煤'
+  }
+]
+export const transports = [
+  {
+    value: '铁路',
+    label: '铁路'
+  },
+  {
+    value: '公路',
+    label: '公路'
+  },
+  {
+    value: '水运',
+    label: '水运'
+  },
+  {
+    value: '海运',
+    label: '海运'
+  },
+  {
+    value: '皮带',
+    label: '皮带'
+  }
+]
+export const settlement = [
+  {
+    value: '一票结算',
+    label: '一票结算'
+  },
+  {
+    value: '二票结算',
+    label: '二票结算'
+  },
+  {
+    value: '烟款税票',
+    label: '烟款税票'
   }
 ]

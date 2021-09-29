@@ -6,30 +6,16 @@ import { useGlobal } from './global'
 import './assets/css/style.less'
 import 'element-plus/lib/theme-chalk/index.css'
 import { setDynamicRouter } from './store/index'
-// import { request1 } from './network'
+import cache from './utils/cache'
 // import ElementUI from 'element-plus'
 // import 'element-plus/lib/theme-chalk/index.css'
-// interface DataType {
-//   data: any
-//   returnCode: string
-//   success: boolean
-// }
-// request1
-//   .request<DataType>({
-//     url: '/home/multidata',
-//     interceptors: {
-//       responseInterceptor(res) {
-//         return res
-//       }
-//     }
-//   })
-//   .then((res) => {
-//     console.log(res)
-//   })
+
 const app = createApp(App)
 app.use(useGlobal)
 app.use(store)
-setDynamicRouter()
+console.log('sdsdsd')
+cache.getCache('userMenus') !== null ? setDynamicRouter() : null
+
 // app.use(router) 之后 回去调用router里面的install
 // 这时候会获取当前url导航栏里面的path值
 // 接着根据该path值去路由表里匹配对应的路由(用来决定路由守卫的to值，此时路由守卫的回调函数没被执行)

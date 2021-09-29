@@ -1,43 +1,55 @@
 <template>
   <el-table :data="tableData" style="width: 100%" class="el-table-self" stripe>
-    <el-table-column prop="number" label="序号" width="150"> </el-table-column>
-    <el-table-column prop="name" label="供应商" width="150"> </el-table-column>
-    <el-table-column prop="org_code" label="综合本月评分" width="150">
-    </el-table-column>
-    <el-table-column prop="legal_person" label="上年度评分" width="150">
-    </el-table-column>
-    <el-table-column prop="phone" label="上年度评级" width="150">
-    </el-table-column>
+    <el-table-column prop="number" label="序号"> </el-table-column>
+    <el-table-column prop="name" label="供应商"> </el-table-column>
+    <el-table-column prop="org_code" label="综合本月评分"> </el-table-column>
+    <el-table-column prop="legal_person" label="上年度评分"> </el-table-column>
+    <el-table-column prop="phone" label="上年度评级"> </el-table-column>
     <el-table-column label="操作" width="120">
       <el-button
         @click.prevent="deleteRow(scope.$index, tableData)"
         type="text"
         size="small"
       >
-        修改
+        查看
       </el-button>
     </el-table-column>
   </el-table>
-  <el-pagination background layout="prev, pager, next" :total="50">
+  <el-pagination
+    background
+    layout="prev, pager, next"
+    :total="50"
+    class="pagination"
+  >
   </el-pagination>
+  <el-dialog v-model="dialogTableVisible" title="年度评分">
+    <detail-table @closeDialog="closeDialog"></detail-table>
+  </el-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { data } from '../config/data'
+import detailTable from './detailTable.vue'
 export default defineComponent({
   name: '',
   setup() {
+    const dialogTableVisible = ref(true)
     const tableData = data
     return {
-      tableData
+      tableData,
+      dialogTableVisible
     }
+  },
+  components: {
+    detailTable
   }
 })
 </script>
 <style scoped lang="less">
 .el-table-self {
-  height: 32rem;
+  margin: 0.5rem;
+  width: 95%;
   &::before {
     height: 0;
   }
@@ -46,5 +58,9 @@ export default defineComponent({
       height: 0 !important;
     }
   }
+}
+.pagination {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 </style>

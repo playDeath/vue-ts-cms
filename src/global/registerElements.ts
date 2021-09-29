@@ -30,7 +30,15 @@ import {
   ElEmpty,
   ElDrawer,
   ElDescriptions,
-  ElDescriptionsItem
+  ElDescriptionsItem,
+  ElMessage,
+  ElSkeleton,
+  ElDialog,
+  ElSelect,
+  ElOption,
+  ElRadio,
+  ElRadioGroup,
+  ElMessageBox
 } from 'element-plus'
 import { Edit } from '@element-plus/icons'
 
@@ -66,7 +74,15 @@ const components = [
   ElEmpty,
   ElDrawer,
   ElDescriptions,
-  ElDescriptionsItem
+  ElDescriptionsItem,
+  ElMessage,
+  ElSkeleton,
+  ElDialog,
+  ElSelect,
+  ElOption,
+  ElRadio,
+  ElRadioGroup,
+  ElMessageBox
 ]
 // 注册全局Element-plus组件
 export default function registerElements(app: App): void {

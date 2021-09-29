@@ -40,3 +40,9 @@ export const data = [
     tip: '通过0家分公司,3家电厂审核,0家列为黑名单'
   }
 ]
+export interface DataType {
+  data: any
+  returnCode: string
+  success: boolean
+  headers?: any
+}

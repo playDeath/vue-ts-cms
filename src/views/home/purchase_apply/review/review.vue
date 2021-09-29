@@ -8,24 +8,7 @@
         <el-form-item label="采购单号:" class="form-item">
           <el-input></el-input>
         </el-form-item>
-        <el-form-item label="采购单状态:" class="form-item">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              全部<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="a">全部</el-dropdown-item>
-                <el-dropdown-item command="b">草稿</el-dropdown-item>
-                <el-dropdown-item command="c">审核中</el-dropdown-item>
-                <el-dropdown-item command="c">已驳回</el-dropdown-item>
-                <el-dropdown-item command="c">已发布</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </el-form-item>
-
-        <el-form-item class="form-item">
+        <el-form-item>
           <el-button type="primary" size="medium">确定</el-button>
         </el-form-item>
       </el-form>

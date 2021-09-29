@@ -9,7 +9,12 @@
               ><i class="el-icon-user-solid"></i>中央认证</span
             >
           </template>
-          <login-account ref="AccountRef"></login-account>
+          <login-account
+            ref="AccountRef"
+            :verify_code="verify_code"
+            @getVerifyCode="getVerifyCode"
+            @getNewImage="getVerifyCode"
+          ></login-account>
         </el-tab-pane>
       </el-tabs>
       <div class="account-control">
@@ -25,23 +30,45 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import loginAccount from './login-account.vue'
+import { commonRequest } from '@/network/index'
+import { DataType } from '../config/login-config'
+import { ElMessage } from 'element-plus'
 export default defineComponent({
   name: 'login-panel',
   setup() {
-    const keepPassword = ref(false)
-    const router = useRouter()
+    const verify_code = ref('')
+    const keepPassword = ref(true)
     // 拿到loginAccount组件实例的类型
     const AccountRef = ref<InstanceType<typeof loginAccount>>()
     const login = () => {
-      // AccountRef.value?.loginAccountAction(keepPassword.value)
-      router.push('/home')
+      AccountRef.value?.loginAccountAction(keepPassword.value)
+      // router.push('/home')
     }
+    const getVerifyCode = () => {
+      // 获取验证码
+      commonRequest
+        .request<DataType>({
+          url: '/kaptcha'
+        })
+        .then((res) => {
+          console.log(res)
+
+          verify_code.value = res.data.data.kaptchaImg
+        })
+        .catch((error) => {
+          console.log(error)
+
+          ElMessage.error(error)
+        })
+    }
+    getVerifyCode()
     return {
       keepPassword,
       login,
-      AccountRef
+      AccountRef,
+      verify_code,
+      getVerifyCode
     }
   },
   components: {

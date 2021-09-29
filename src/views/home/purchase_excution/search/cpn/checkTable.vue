@@ -13,8 +13,8 @@
     </el-table-column>
     <el-table-column prop="person" label="发起人" width="150">
     </el-table-column>
-    <el-table-column prop="status" label="状态" width="150">
-      草稿</el-table-column
+    <el-table-column prop="status" label="状态" width="140"
+      >已提交</el-table-column
     >
     <el-table-column label="操作" width="120">
       <el-button

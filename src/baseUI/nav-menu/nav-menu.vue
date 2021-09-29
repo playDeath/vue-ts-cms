@@ -16,33 +16,36 @@
     >
       <template v-for="item in navMenu" :key="item.id">
         <!-- 二级菜单 -->
-        <template v-if="item.type === 1">
+        <template v-if="item.authorityType === 1">
           <!-- 二级菜单的可以展开的标题 -->
-          <el-submenu :index="item.id + ''">
+          <el-submenu :index="item.authorityId + ''">
             <template #title>
               <i v-if="item.icon" :class="item.icon"></i>
-              <span>{{ item.name }}</span>
+              <span>{{ item.authorityName }}</span>
             </template>
             <!-- 遍历里面的item -->
-            <template v-for="subitem in item.children" :key="subitem.id">
+            <template
+              v-for="subitem in item.childrenRolePermissions"
+              :key="subitem.authorityId"
+            >
               <el-menu-item
-                :index="subitem.id + ''"
+                :index="subitem.authorityId + ''"
                 @click="handleMenuItemClick(subitem)"
               >
                 <i v-if="subitem.icon" :class="subitem.icon"></i>
-                <span>{{ subitem.name }}</span>
+                <span>{{ subitem.authorityName }}</span>
               </el-menu-item>
             </template>
           </el-submenu>
         </template>
         <!-- 一级菜单 -->
-        <template v-else-if="item.type === 2">
+        <template v-else-if="item.authorityType === 2">
           <el-menu-item
-            :index="item.id + ''"
+            :index="item.authorityId + ''"
             @click="handleMenuItemClick(item)"
           >
             <i v-if="item.icon" :class="item.icon"></i>
-            <span>{{ item.name }}</span>
+            <span>{{ item.authorityName }}</span>
           </el-menu-item>
         </template>
       </template>
@@ -73,12 +76,10 @@ export default defineComponent({
 
     const handleMenuItemClick = (item: any) => {
       router.push({
-        path: item.url ?? '/404'
+        path: item.path ?? '/404'
       })
     }
     const defaultActive = getCurrentMenuId(navMenu, route.path)
-    console.log(defaultActive)
-
     return {
       title,
       navMenu,

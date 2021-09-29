@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
 import loginModule from './login/login'
-
+import purchaseApply from './home/purchase_apply'
 const store = createStore({
   state() {
     return {
@@ -9,7 +9,8 @@ const store = createStore({
   },
   actions: {},
   modules: {
-    loginModule
+    loginModule,
+    purchaseApply
   }
 })
 export const setDynamicRouter = () => {

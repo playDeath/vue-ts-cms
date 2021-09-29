@@ -3,18 +3,17 @@
     <div class="check-block">
       <el-form ref="form" label-width="84px" class="form">
         <el-form-item label="供应商名称" class="form-item">
-          <el-input></el-input>
+          <el-input v-model="supplier"></el-input>
         </el-form-item>
         <el-form-item label="评分状态" class="form-item">
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
-              下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
+              已评价<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="a">已评价</el-dropdown-item>
                 <el-dropdown-item command="b">未评价</el-dropdown-item>
-                <el-dropdown-item command="c">红烧肉</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -36,12 +35,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
 export default defineComponent({
   name: '',
   setup() {
-    return {}
+    const supplier = ref('')
+    return {
+      supplier
+    }
   },
   components: {
     checkTable

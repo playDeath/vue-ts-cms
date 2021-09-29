@@ -16,10 +16,10 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="a">全部</el-dropdown-item>
-                <el-dropdown-item command="b">草稿</el-dropdown-item>
-                <el-dropdown-item command="c">审核中</el-dropdown-item>
-                <el-dropdown-item command="c">已驳回</el-dropdown-item>
+                <el-dropdown-item command="b">已下达</el-dropdown-item>
+                <el-dropdown-item command="c">已提交</el-dropdown-item>
                 <el-dropdown-item command="c">已发布</el-dropdown-item>
+                <el-dropdown-item command="c">已作废</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>

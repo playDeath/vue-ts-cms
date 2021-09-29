@@ -3,7 +3,7 @@
     <div class="check-block">
       <el-form ref="form" label-width="84px" class="form">
         <el-form-item label="供应商名称" class="form-item">
-          <el-input></el-input>
+          <el-input v-model="suppiler"></el-input>
         </el-form-item>
         <el-form-item label="年度" class="form-item">
           <div class="block">
@@ -28,12 +28,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
 export default defineComponent({
   name: '',
   setup() {
-    return {}
+    const suppiler = ref('')
+    return {
+      suppiler
+    }
   },
   components: {
     checkTable

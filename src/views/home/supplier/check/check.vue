@@ -3,7 +3,7 @@
     <div class="check-block">
       <el-form ref="form" label-width="84px" class="form">
         <el-form-item label="供应商名称" class="form-item">
-          <el-input></el-input>
+          <el-input v-model="supplier"></el-input>
         </el-form-item>
         <el-form-item label="" label-width="10px">
           <el-button type="primary" size="medium">确定</el-button>
@@ -17,12 +17,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
+import { commonRequest } from '@/network/index'
+import { DataType } from './config/data'
 export default defineComponent({
   name: '',
   setup() {
-    return {}
+    const supplier = ref('')
+    commonRequest
+      .request<DataType>({
+        url: '/supplier/findSupByPage/1/1',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: {}
+      })
+      .then((res) => {
+        console.log(res)
+      })
+    return {
+      supplier
+    }
   },
   components: {
     checkTable

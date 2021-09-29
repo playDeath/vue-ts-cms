@@ -7,6 +7,7 @@ class CacheControl {
     if (value) {
       return JSON.parse(value)
     }
+    return null
   }
   deleteCache(key: string) {
     window.localStorage.removeItem(key)

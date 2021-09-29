@@ -18,23 +18,23 @@ class LzwRequest {
       this.interceptors?.responseInterceptorCatch
     )
 
-    // 对整个类的请求响应拦截
-    this.instance.interceptors.request.use(
-      (config) => {
-        return config
-      },
-      (error) => {
-        console.log(error)
-      }
-    )
-    this.instance.interceptors.response.use(
-      (res) => {
-        return res
-      },
-      (error) => {
-        console.log(error)
-      }
-    )
+    // // 对整个类的请求响应拦截
+    // this.instance.interceptors.request.use(
+    //   (config) => {
+    //     return config
+    //   },
+    //   (error) => {
+    //     console.log(error)
+    //   }
+    // )
+    // this.instance.interceptors.response.use(
+    //   (res) => {
+    //     return res
+    //   },
+    //   (error) => {
+    //     console.log(error)
+    //   }
+    // )
   }
   request<T>(config: LzwRequestConfig): Promise<T> {
     return new Promise((resovle, reject) => {

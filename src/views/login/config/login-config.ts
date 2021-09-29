@@ -2,11 +2,11 @@ export const rules = {
   username: [
     {
       required: true,
-      message: '用户名是必填项',
+      message: '用户名不能为空',
       trigger: 'change'
     },
     {
-      pattern: /^[a-z0-9]{1,10}$/,
+      pattern: /^[a-z0-9\u4E00-\u9FFF]{1,10}$/,
       message: '用户名必须在1-10个字符之间',
       trigger: 'change'
     }
@@ -14,7 +14,7 @@ export const rules = {
   password: [
     {
       required: true,
-      message: '密码是必传内容~',
+      message: '密码是不能为空',
       trigger: 'change'
     },
     {
@@ -23,16 +23,22 @@ export const rules = {
       trigger: 'change'
     }
   ],
-  verifyCode: [
+  code: [
     {
       required: true,
       message: '验证码不能为空',
       trigger: 'blur'
     },
     {
-      pattern: /^\d{6}$/,
-      message: '验证码必须是6位的有效数字',
+      pattern: /^\d{5}$/,
+      message: '验证码必须是5位的有效数字',
       trigger: 'blur'
     }
   ]
+}
+export interface DataType {
+  data: any
+  returnCode: string
+  success: boolean
+  headers?: any
 }
