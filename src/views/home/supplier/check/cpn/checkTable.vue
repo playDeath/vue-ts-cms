@@ -1,43 +1,77 @@
 <template>
-  <el-table :data="tableData" style="width: 90%" class="el-table-self">
-    <el-table-column prop="number" label="序号" width="150"> </el-table-column>
-    <el-table-column prop="name" label="供应商" width="150"> </el-table-column>
-    <el-table-column prop="org_code" label="组织代码" width="150">
-    </el-table-column>
-    <el-table-column prop="legal_person" label="法人" width="150">
-    </el-table-column>
-    <el-table-column prop="phone" label="电话" width="150"> </el-table-column>
-    <el-table-column prop="tip" label="注册摘要信息" width="150">
-    </el-table-column>
-    <el-table-column label="操作" width="120">
-      <el-button
-        @click.prevent="deleteRow(scope.$index, tableData)"
-        type="text"
-        size="small"
-      >
-        审核
-      </el-button>
+  <el-table
+    :data="tableData"
+    style="width: 95%"
+    class="el-table-self"
+    stripe
+    fit
+    empty-text="没有数据"
+  >
+    <el-table-column prop="code" label="供应商编号"> </el-table-column>
+    <el-table-column prop="corPhone" label="法人电话"> </el-table-column>
+    <el-table-column prop="corporation" label="法人代表"> </el-table-column>
+    <el-table-column prop="membertypeid" label="类型ID"> </el-table-column>
+    <el-table-column prop="name" label="供应商名称"> </el-table-column>
+    <el-table-column prop="orgCode" label="组织机构代码"> </el-table-column>
+    <el-table-column prop="supplierid" label="供应商ID"> </el-table-column>
+    <el-table-column label="操作">
+      <template v-slot="scope">
+        <el-button
+          @click.prevent="showDialog(scope.$index, tableData)"
+          type="text"
+          size="small"
+        >
+          查看
+        </el-button>
+      </template>
     </el-table-column>
   </el-table>
-  <el-pagination background layout="prev, pager, next" :total="50">
+  <el-pagination
+    background
+    layout="prev, pager, next"
+    :total="total"
+    class="pagination"
+    @current-change="currentChange"
+    :page-size="size"
+  >
   </el-pagination>
-  <el-dialog v-model="dialogTableVisible" title="供应商详细信息">
+  <el-dialog v-model="dialogTableVisible" title="供应商详细信息" width="75%">
     <detail-table @closeDialog="closeDialog"></detail-table>
   </el-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { data } from '../config/data'
+import { defineComponent, ref, computed } from 'vue'
 import detailTable from './detailTable.vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup() {
-    const tableData = data
-    const dialogTableVisible = ref(true)
+    let current = ref(0)
+    const store = useStore()
+    const size = ref(6)
+    const tableData = computed(() => store.state.supplier.suppliers)
+    const total = computed(() => store.state.supplier.total)
+    const dialogTableVisible = ref(false)
+    const showDialog = (index: number, rows: Array<any>) => {
+      dialogTableVisible.value = true
+      store.dispatch('supplier/getDetailSupplierById', 1)
+    }
+    const currentChange = (currentPage: number) => {
+      store.dispatch('supplier/getSuppliersByCondition', {
+        current: currentPage,
+        size: size.value,
+        bodyParams: {}
+      })
+    }
     return {
       tableData,
-      dialogTableVisible
+      dialogTableVisible,
+      total,
+      size,
+      current,
+      currentChange,
+      showDialog
     }
   },
   components: {
@@ -47,7 +81,7 @@ export default defineComponent({
 </script>
 <style scoped lang="less">
 .el-table-self {
-  height: 32rem;
+  padding: 1rem;
   &::before {
     height: 0;
   }
@@ -56,5 +90,9 @@ export default defineComponent({
       height: 0 !important;
     }
   }
+}
+.pagination {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 </style>

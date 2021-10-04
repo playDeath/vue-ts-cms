@@ -4,6 +4,7 @@ import { ElLoading } from 'element-plus'
 import CacheControl from '@/utils/cache'
 import type { ILoadingInstance } from 'element-plus/lib/el-loading/src/loading.type'
 let loading: ILoadingInstance
+let loadingTable: ILoadingInstance
 const commonRequest = new LzwRequest({
   baseURL: BASE_URL,
   timeout: TIME_OUT,
@@ -37,7 +38,7 @@ const tableRequest = new LzwRequest({
   },
   interceptors: {
     requestInterceptor(config) {
-      loading = ElLoading.service({
+      loadingTable = ElLoading.service({
         text: '加载中',
         spinner: 'el-icon-loading',
         target: document.querySelector('.el-table-self') as HTMLElement
@@ -45,11 +46,11 @@ const tableRequest = new LzwRequest({
       return config
     },
     responseInterceptor(res) {
-      loading.close()
+      loadingTable.close()
       return res
     },
     responseInterceptorCatch(res) {
-      loading.close()
+      loadingTable.close()
       return res
     }
   }

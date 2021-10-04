@@ -3,11 +3,15 @@
     <div class="check-block">
       <el-form ref="form" label-width="84px" class="form">
         <el-form-item label="供应商名称" class="form-item">
-          <el-input v-model="suppiler"></el-input>
+          <el-input v-model="supplierName"></el-input>
         </el-form-item>
         <el-form-item label="年度" class="form-item">
           <div class="block">
-            <el-date-picker v-model="value3" type="year" placeholder="选择年">
+            <el-date-picker
+              v-model="select_year"
+              type="year"
+              placeholder="选择年"
+            >
             </el-date-picker>
           </div>
         </el-form-item>
@@ -17,6 +21,7 @@
             type="primary"
             size="medium"
             icon="el-icon-search"
+            @click="searchByConditions"
           ></el-button>
         </el-form-item>
       </el-form>
@@ -30,12 +35,33 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup() {
-    const suppiler = ref('')
+    const supplierName = ref('')
+    const select_year = ref('')
+    const store = useStore()
+    const searchByConditions = () => {
+      let bodyParams = {}
+      if (supplierName.value !== '' && select_year.value === '') {
+        bodyParams = { name: supplierName.value }
+      } else if (supplierName.value === '' && select_year.value !== '全部') {
+        bodyParams = { year: select_year.value }
+      } else if (supplierName.value !== '' && select_year.value !== '') {
+        bodyParams = { name: supplierName.value, year: select_year.value }
+      }
+      store.dispatch('supplier/getAnnualScoreByCondition', {
+        current: 0,
+        size: 5,
+        bodyParams
+      })
+    }
+    searchByConditions()
     return {
-      suppiler
+      supplierName,
+      select_year,
+      searchByConditions
     }
   },
   components: {

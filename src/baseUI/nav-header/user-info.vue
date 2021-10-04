@@ -16,7 +16,9 @@
           <el-dropdown-item divided @click="showPersonInfo"
             >个人信息</el-dropdown-item
           >
-          <el-dropdown-item>企业信息</el-dropdown-item>
+          <el-dropdown-item @click="showEnterPriseInfo"
+            >企业信息</el-dropdown-item
+          >
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -46,10 +48,14 @@ export default defineComponent({
     const showPersonInfo = () => {
       emitter.emit('showBar')
     }
+    const showEnterPriseInfo = () => {
+      emitter.emit('showBarTwo')
+    }
     return {
       name,
       exit,
-      showPersonInfo
+      showPersonInfo,
+      showEnterPriseInfo
     }
   }
 })

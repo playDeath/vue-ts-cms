@@ -1,62 +1,67 @@
 <template>
-  <div>
-    <el-descriptions title="基本情况" :column="2" border>
-      <el-descriptions-item
-        label="供应商名称"
-        label-align="right"
-        align="center"
-        label-class-name="my-label"
-        class-name="my-content"
-        width="150px"
-        >黑龙江经贸有限公司</el-descriptions-item
-      >
-      <el-descriptions-item
-        label="组织机构代码"
-        label-align="right"
-        align="center"
-        >supplier</el-descriptions-item
-      >
-      <el-descriptions-item label="法人代表" label-align="right" align="center">
-        <el-tag size="small">赵某某</el-tag>
-      </el-descriptions-item>
-      <el-descriptions-item
-        label="法人代表身份证"
-        label-align="right"
-        align="center"
-        >1111111111111111111</el-descriptions-item
-      >
-      <el-descriptions-item label="法人代表" label-align="right" align="center">
-        <el-tag size="small">注册资金(万元)</el-tag>
-      </el-descriptions-item>
-      <el-descriptions-item
-        label="法人代表身份证"
-        label-align="right"
-        align="center"
-        >200</el-descriptions-item
-      >
-      <el-descriptions-item
-        label="税务登记代码"
-        label-align="right"
-        align="center"
-      >
-        <el-tag size="small">11111111</el-tag>
-      </el-descriptions-item>
-      <el-descriptions-item
-        label="经营执照编号"
-        label-align="right"
-        align="center"
-        >1111111111111111111</el-descriptions-item
-      >
-    </el-descriptions>
-  </div>
+  <el-tabs type="border-card">
+    <el-tab-pane>
+      <template #label>
+        <span><i class="el-icon-date"></i> 基本情况</span>
+      </template>
+      <info-descriptions :info="info"></info-descriptions>
+    </el-tab-pane>
+    <el-tab-pane label="附件信息">
+      <attachment-list :attachmentList="attachmentList"></attachment-list>
+    </el-tab-pane>
+    <el-tab-pane label="审核记录">
+      <lists :Lists="Lists"></lists>
+    </el-tab-pane>
+  </el-tabs>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
+import infoDescriptions from '@/components/infoDescriptions.vue'
+import attachmentList from '@/components/attachmentList.vue'
+import Lists from '@/components/Lists.vue'
+import { objectToArrayTwo } from '@/utils/data-transfer'
+import { supplierData } from '@/components/config/data'
 export default defineComponent({
   name: '',
   setup() {
-    return {}
+    const store = useStore()
+    const info = computed(() =>
+      objectToArrayTwo(
+        store.state.supplier.supplier.tfultbsupplier,
+        supplierData
+      )
+    )
+    // watch(
+    //   store.state.supplier.supplier,
+    //   () => {
+    //     info = computed(() =>
+    //       objectToArrayTwo(
+    //         store.state.supplier.supplier.tfultbsupplier,
+    //         supplierData
+    //       )
+    //     )
+    //   },
+    //   {
+    //     immediate: true,
+    //     deep: true
+    //   }
+    // )
+    const attachmentList = computed(
+      () => store.state.supplier.supplier.attachmentList
+    )
+    const Lists = computed(() => store.state.supplier.supplier.Lists)
+    return {
+      attachmentList,
+      info,
+      Lists
+    }
+  },
+  components: {
+    infoDescriptions,
+    attachmentList,
+    Lists
   }
 })
 </script>

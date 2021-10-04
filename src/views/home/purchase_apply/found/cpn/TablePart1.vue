@@ -1,13 +1,19 @@
 <template>
-  <el-form ref="form" :model="purchaseList" size="mini">
+  <el-form :model="purchaseList" size="mini">
     <el-row :gutter="20">
       <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
         <el-form-item label="申请单位:">
-          <el-input v-model="purchaseList.unit"></el-input> </el-form-item
+          <el-input
+            v-model="purchaseList.unit"
+            disabled
+          ></el-input> </el-form-item
       ></el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
         <el-form-item label="操作员:">
-          <el-input v-model="purchaseList.operuser"></el-input> </el-form-item
+          <el-input
+            v-model="purchaseList.operuser"
+            disabled
+          ></el-input> </el-form-item
       ></el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
         <el-form-item label="采购数量:">
@@ -94,6 +100,7 @@
             type="datetime"
             placeholder="选择日期时间"
             v-model="purchaseList.operdate"
+            value-format="YYYY-MM-DDTHH:MM:ss"
           >
           </el-date-picker></el-form-item
       ></el-col>
@@ -103,6 +110,7 @@
             type="datetime"
             placeholder="选择日期时间"
             v-model="purchaseList.bjtimeEnd"
+            value-format="YYYY-MM-DDTHH:MM:ss"
           >
           </el-date-picker> </el-form-item
       ></el-col>
@@ -113,6 +121,7 @@
           <el-date-picker
             type="datetimerange"
             range-separator="至"
+            value-format="YYYY-MM-DDTHH:MM:ss"
             v-model="doubleDatePicker"
           >
           </el-date-picker> </el-form-item
@@ -168,7 +177,10 @@
     </el-row>
     <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="footer">
       <el-button type="primary" @click="nextTo">下一步</el-button>
-      <el-button type="primary" @click="editTo" class="el-btn-distant"
+      <el-button
+        type="primary"
+        @click="addPurchase('保存', '草稿')"
+        class="el-btn-distant"
         >保存</el-button
       >
     </el-col>
@@ -177,28 +189,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, computed, ref, watch } from 'vue'
 import {
-  purchaseListContent,
   coalTypes,
   TwoLevelCoalClass,
   transports,
   settlement
 } from '../config/data'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup(props, { emit }) {
-    const purchaseList = ref(purchaseListContent)
+    const store = useStore()
+    const doubleDatePicker = ref(['', ''])
+    watch(
+      doubleDatePicker,
+      (newValue) => {
+        store.commit('purchaseApply/setPurchaseListDoubleDate', newValue)
+      },
+      {
+        deep: true
+      }
+    )
+    const purchaseList = computed(() => store.state.purchaseApply.purchaseList)
+    const addPurchase = (msg: string, state: string): void => {
+      store.dispatch('purchaseApply/addPurchaseplan', { msg, state })
+    }
     const nextTo = () => {
       emit('TabToNext')
     }
     return {
-      purchaseList,
       coalTypes,
       TwoLevelCoalClass,
       transports,
       settlement,
-      nextTo
+      nextTo,
+      purchaseList,
+      doubleDatePicker,
+      addPurchase
     }
   }
 })

@@ -1,9 +1,16 @@
 <template>
-  <el-table :data="tableData" style="width: 90%" class="el-table-self">
-    <el-table-column prop="number" label="采购单号"> </el-table-column>
-    <el-table-column prop="name" label="供应商"> </el-table-column>
-    <el-table-column prop="money" label="冻结金额"> </el-table-column>
-    <el-table-column prop="state" label="订单状态"> </el-table-column>
+  <el-table :data="tableData" class="el-table-self">
+    <el-table-column prop="idDeposit" label="保证金单号"> </el-table-column>
+    <el-table-column prop="purchapplyid" label="采购单号"> </el-table-column>
+    <el-table-column prop="supplier" label="供应商"> </el-table-column>
+    <el-table-column prop="freezeAmount" label="冻结金额（元）">
+    </el-table-column>
+    <el-table-column
+      prop="freezeStatus"
+      label="冻结状态"
+      :formatter="statusFormat"
+    >
+    </el-table-column>
     <el-table-column label="操作" width="120">
       <el-button
         @click.prevent="deleteRow(scope.$index, tableData)"
@@ -14,7 +21,7 @@
       </el-button>
     </el-table-column>
   </el-table>
-  <el-pagination background layout="prev, pager, next" :total="50">
+  <el-pagination background layout="prev, pager, next" :total="total">
   </el-pagination>
   <el-dialog v-model="dialogTableVisible" title="详细信息">
     <detail-table @closeDialog="closeDialog"></detail-table>
@@ -22,17 +29,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { data } from '../config/data'
+import { defineComponent, ref, computed } from 'vue'
 import detailTable from './detailTable.vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup() {
-    const tableData = data
+    const store = useStore()
+    const tableData = computed(() => store.state.depositModule.deposits)
+    const total = computed(() => store.state.depositModule.total)
+    const statusFormat = (row: any) => {
+      if (row.freezeStatus === 1) {
+        return '冻结中'
+      }
+      return '已冻结'
+    }
     const dialogTableVisible = ref(false)
     return {
       tableData,
-      dialogTableVisible
+      dialogTableVisible,
+      total,
+      statusFormat
     }
   },
   components: {

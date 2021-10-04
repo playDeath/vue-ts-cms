@@ -11,7 +11,7 @@
           <table-part1 @TabToNext="TabToNext"></table-part1>
         </el-tab-pane>
         <el-tab-pane label="煤质情况" name="second">
-          <table-part2></table-part2>
+          <table-part2 style="height: 460px"></table-part2>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -19,22 +19,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref } from 'vue'
 import TablePart1 from './cpn/TablePart1.vue'
 import TablePart2 from './cpn/TablePart2.vue'
-
+import { useStore } from 'vuex'
+import { purchaseListContent } from './config/data'
 export default defineComponent({
   name: '',
   setup() {
+    const store = useStore()
+    store.dispatch('purchaseApply/getData')
+    store.commit('purchaseApply/setPurchaseList', purchaseListContent)
     const chooseTab = ref('first')
     const TabToNext = () => {
-      console.log('sdsd')
-
       chooseTab.value = 'second'
     }
-    const doubleDatePicker = reactive([])
     return {
-      doubleDatePicker,
       chooseTab,
       TabToNext
     }
@@ -76,7 +76,8 @@ export default defineComponent({
     color: #606266;
   }
   .line {
-    width: 92%;
+    margin-top: 1rem;
+    width: 88%;
     border-bottom: 1px dotted rgb(92, 89, 89);
   }
   .positionAbs {

@@ -78,8 +78,6 @@ const purchaseApply: any = {
         })
     },
     deletePurchaseplan(context: any) {
-      console.log(context.state.purchaseId)
-
       commonRequest
         .request<DataType>({
           url: '/tPurchaseplan/deletePurchaseById',
@@ -96,6 +94,50 @@ const purchaseApply: any = {
 
           if (res.status === 200) {
             ElMessage.success('删除成功')
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('出现一些错误')
+          console.log(error)
+        })
+    },
+    addPurchaseplan(context: any, payload: any) {
+      context.commit('setPurchaseListApplyState', payload.state)
+      commonRequest
+        .request<DataType>({
+          url: '/tPurchaseplan/addPurchaseplan',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: context.state.purchaseList
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            ElMessage.success(`${payload.msg}${payload.state}成功`)
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('出现一些错误')
+          console.log(error)
+        })
+    },
+    getData(context: any) {
+      commonRequest
+        .request<DataType>({
+          url: '/tPurchaseplan/getData',
+          method: 'POST'
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            context.commit('setpurchaseListUnitAndOperator', {
+              operuser: res.data.operuser,
+              unit: res.data.unit
+            })
           } else {
             ElMessage.error('出现一些错误')
           }
@@ -121,6 +163,17 @@ const purchaseApply: any = {
     },
     setPurchaseList(state: any, purchaseList: any) {
       state.purchaseList = purchaseList
+    },
+    setPurchaseListApplyState(state: any, applyState: string) {
+      state.purchaseList.applystate = applyState
+    },
+    setPurchaseListDoubleDate(state: any, doubleDate: any) {
+      state.purchaseList.jhtime = doubleDate[0]
+      state.purchaseList.jhtimeEnd = doubleDate[1]
+    },
+    setpurchaseListUnitAndOperator(state: any, payload: any) {
+      state.purchaseList.unit = payload.unit
+      state.purchaseList.operuser = payload.operuser
     }
   }
 }

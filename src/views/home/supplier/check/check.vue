@@ -1,12 +1,14 @@
 <template>
   <div class="check">
     <div class="check-block">
-      <el-form ref="form" label-width="84px" class="form">
+      <el-form ref="form" class="form">
         <el-form-item label="供应商名称" class="form-item">
-          <el-input v-model="supplier"></el-input>
+          <el-input v-model="supplierName"></el-input>
         </el-form-item>
         <el-form-item label="" label-width="10px">
-          <el-button type="primary" size="medium">确定</el-button>
+          <el-button type="primary" size="medium" @click="searchByConditions"
+            >确定</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -19,26 +21,28 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
-import { commonRequest } from '@/network/index'
-import { DataType } from './config/data'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup() {
-    const supplier = ref('')
-    commonRequest
-      .request<DataType>({
-        url: '/supplier/findSupByPage/1/1',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: {}
+    const supplierName = ref('')
+    const store = useStore()
+    const searchByConditions = () => {
+      store.dispatch('supplier/getSuppliersByCondition', {
+        current: 0,
+        size: 5,
+        bodyParams:
+          supplierName.value === ''
+            ? {}
+            : {
+                name: supplierName.value
+              }
       })
-      .then((res) => {
-        console.log(res)
-      })
+    }
+    searchByConditions()
     return {
-      supplier
+      supplierName,
+      searchByConditions
     }
   },
   components: {
@@ -55,7 +59,7 @@ export default defineComponent({
       width: 45rem;
       display: flex;
       padding-top: 1rem;
-      padding-left: 1rem;
+      margin-left: 3.5rem;
     }
     .form-item {
       display: flex;

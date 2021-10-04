@@ -3,17 +3,21 @@
     <div class="check-block">
       <el-form ref="form" label-width="84px" class="form">
         <el-form-item label="供应商名称" class="form-item">
-          <el-input v-model="supplier"></el-input>
+          <el-input v-model="supplierName"></el-input>
         </el-form-item>
         <el-form-item label="评分状态" class="form-item">
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
-              已评价<i class="el-icon-arrow-down el-icon--right"></i>
+              {{ selector }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="a">已评价</el-dropdown-item>
-                <el-dropdown-item command="b">未评价</el-dropdown-item>
+                <el-dropdown-item
+                  v-for="item in scoreState"
+                  :key="item"
+                  :command="item"
+                  >{{ item }}</el-dropdown-item
+                >
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -24,6 +28,7 @@
             type="primary"
             size="medium"
             icon="el-icon-search"
+            @click="searchByConditions"
           ></el-button>
         </el-form-item>
       </el-form>
@@ -37,12 +42,40 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
+import { useStore } from 'vuex'
+import { scoreState } from './config/data'
 export default defineComponent({
   name: '',
   setup() {
-    const supplier = ref('')
+    const supplierName = ref('')
+    const store = useStore()
+    const selector = ref('全部')
+    const handleCommand = (item: string) => {
+      selector.value = item
+    }
+    // 通过条件查询
+    const searchByConditions = () => {
+      let bodyParams = {}
+      if (supplierName.value !== '' && selector.value === '全部') {
+        bodyParams = { name: supplierName.value }
+      } else if (supplierName.value === '' && selector.value !== '全部') {
+        bodyParams = { state: selector.value }
+      } else if (supplierName.value !== '' && selector.value !== '全部') {
+        bodyParams = { name: supplierName.value, state: selector.value }
+      }
+      store.dispatch('supplier/getMonthScoreByCondition', {
+        current: 0,
+        size: 5,
+        bodyParams
+      })
+    }
+    searchByConditions()
     return {
-      supplier
+      supplierName,
+      scoreState,
+      selector,
+      handleCommand,
+      searchByConditions
     }
   },
   components: {
@@ -59,7 +92,7 @@ export default defineComponent({
       width: 45rem;
       display: flex;
       padding-top: 1rem;
-      padding-left: 1rem;
+      padding-left: 2rem;
     }
     .form-item {
       display: flex;

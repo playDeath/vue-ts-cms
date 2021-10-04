@@ -3,7 +3,7 @@
     <div class="check-block">
       <el-form ref="form" label-width="95px" class="form" load>
         <el-form-item label="供应商名称:" class="form-item">
-          <el-input v-model="supplier"></el-input>
+          <el-input v-model="supplierName"></el-input>
         </el-form-item>
         <el-form-item label="单据编号:" class="form-item">
           <el-input v-model="purchaseId"></el-input>
@@ -48,38 +48,44 @@ export default defineComponent({
   name: '',
   setup() {
     const store = useStore()
-    const supplier = ref('')
+    const supplierName = ref('')
     const purchaseId = ref('')
-    watch(
-      purchaseId,
-      (id) => {
-        store.commit('purchaseApply/setPurchaseId', id)
-      },
-      {
-        deep: true
-      }
-    )
-    let selector = computed(() => store.state.purchaseApply.selector)
+    const selector = ref('全部')
+    let freezeStatus: number | string = ''
     const changeSelector = (item: string) => {
-      store.commit('purchaseApply/setSelector', item)
+      selector.value = item
+      switch (selector.value) {
+        case '全部':
+          freezeStatus = ''
+          break
+        case '冻结中':
+          freezeStatus = 1
+          break
+        case '已解冻':
+          freezeStatus = 0
+          break
+      }
+      console.log(freezeStatus)
     }
     const searchByCondition = () => {
-      store.dispatch('purchaseApply/getPurchasePlanListByCondition', {
+      store.dispatch('depositModule/getPromiseDepositsByCondition', {
         current: 0,
         size: 5,
         bodyParams: {
-          purchaseId: purchaseId.value,
-          state: selector.value === '全部' ? '' : selector.value
+          freezeStatus: freezeStatus,
+          supplier: supplierName.value,
+          purchapplyid: purchaseId.value
         }
       })
     }
+    searchByCondition()
     return {
       selector,
       changeSelector,
       selectors,
       purchaseId,
       searchByCondition,
-      supplier
+      supplierName
     }
   },
   components: {

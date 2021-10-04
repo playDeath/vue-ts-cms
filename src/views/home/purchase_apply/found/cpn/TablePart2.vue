@@ -110,8 +110,13 @@
       ></el-col>
     </el-row>
     <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="footer">
-      <el-button type="primary" @click="nextTo">提交</el-button>
-      <el-button type="primary" @click="editTo" class="el-btn-distant"
+      <el-button type="primary" @click="addPurchase('保存', '提交')"
+        >提交</el-button
+      >
+      <el-button
+        type="primary"
+        @click="addPurchase('保存', '草稿')"
+        class="el-btn-distant"
         >保存</el-button
       >
     </el-col>
@@ -119,24 +124,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, computed } from 'vue'
 import {
-  purchaseListContent,
   coalTypes,
   TwoLevelCoalClass,
   transports,
   settlement
 } from '../config/data'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
   setup() {
-    const purchaseList = ref(purchaseListContent)
+    const store = useStore()
+    const purchaseList = computed(() => store.state.purchaseApply.purchaseList)
+    const addPurchase = (msg: string, state: string): void => {
+      store.dispatch('purchaseApply/addPurchaseplan', { msg, state })
+    }
     return {
-      purchaseList,
       coalTypes,
       TwoLevelCoalClass,
       transports,
-      settlement
+      settlement,
+      purchaseList,
+      addPurchase
     }
   }
 })
