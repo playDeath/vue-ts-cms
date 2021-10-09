@@ -7,13 +7,16 @@
     fit
     empty-text="没有数据"
   >
-    <el-table-column prop="code" label="供应商编号"> </el-table-column>
+    <el-table-column prop="name" label="供应商名称"> </el-table-column>
     <el-table-column prop="corPhone" label="法人电话"> </el-table-column>
     <el-table-column prop="corporation" label="法人代表"> </el-table-column>
-    <el-table-column prop="membertypeid" label="类型ID"> </el-table-column>
-    <el-table-column prop="name" label="供应商名称"> </el-table-column>
+
     <el-table-column prop="orgCode" label="组织机构代码"> </el-table-column>
-    <el-table-column prop="supplierid" label="供应商ID"> </el-table-column>
+    <el-table-column label="注册摘要信息">
+      <template v-slot="scope">
+        <span>通过了{{ scope.row.verifyCount }}家电厂审核</span>
+      </template>
+    </el-table-column>
     <el-table-column label="操作">
       <template v-slot="scope">
         <el-button
@@ -55,7 +58,7 @@ export default defineComponent({
     const dialogTableVisible = ref(false)
     const showDialog = (index: number, rows: Array<any>) => {
       dialogTableVisible.value = true
-      store.dispatch('supplier/getDetailSupplierById', 1)
+      store.dispatch('supplier/getDetailSupplierById', rows[index].supplierid)
     }
     const currentChange = (currentPage: number) => {
       store.dispatch('supplier/getSuppliersByCondition', {
@@ -64,6 +67,9 @@ export default defineComponent({
         bodyParams: {}
       })
     }
+    const closeDialog = () => {
+      dialogTableVisible.value = false
+    }
     return {
       tableData,
       dialogTableVisible,
@@ -71,7 +77,8 @@ export default defineComponent({
       size,
       current,
       currentChange,
-      showDialog
+      showDialog,
+      closeDialog
     }
   },
   components: {

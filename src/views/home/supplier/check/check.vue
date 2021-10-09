@@ -29,7 +29,7 @@ export default defineComponent({
     const store = useStore()
     const searchByConditions = () => {
       store.dispatch('supplier/getSuppliersByCondition', {
-        current: 0,
+        current: 1,
         size: 5,
         bodyParams:
           supplierName.value === ''

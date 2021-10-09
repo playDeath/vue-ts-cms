@@ -5,6 +5,7 @@
     :model="sizeForm"
     label-width="80px"
     size="mini"
+    disabled
   >
     <el-tabs stretch v-model="chooseTab">
       <el-tab-pane label="基本情况" name="first">
@@ -22,6 +23,7 @@
                 type="datetime"
                 placeholder="选择日期时间"
                 v-model="sizeForm.bjtimeEnd"
+                value-format="YYYY-MM-DDTHH:MM:ss"
               >
               </el-date-picker> </el-form-item
           ></el-col>
@@ -46,6 +48,7 @@
                 type="datetime"
                 placeholder="选择日期时间"
                 v-model="sizeForm.operdate"
+                value-format="YYYY-MM-DDTHH:MM:ss"
               >
               </el-date-picker></el-form-item
           ></el-col>
@@ -306,22 +309,10 @@
           ></el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="采购进展" name="third">
-        <el-table :data="tableData" height="250" style="width: 100%">
-          <el-table-column prop="number" label="序号" />
-          <el-table-column prop="start" label="开始状态" />
-          <el-table-column prop="end" label="结束状态" />
-          <el-table-column prop="user" label="操作人员" />
-          <el-table-column prop="actions" label="操作" />
-          <el-table-column prop="advice" label="审批意见" />
-          <el-table-column prop="time" label="操作时间" />
-        </el-table>
+      <el-tab-pane label="审批操作" name="third">
+        <review-record></review-record>
       </el-tab-pane>
     </el-tabs>
-    <div class="footer" v-if="listStatus === '草稿' || listStatus === '驳回'">
-      <el-button type="primary" @click="editTo">修改</el-button>
-      <el-button type="danger" @click="deleteTo">删除</el-button>
-    </div>
   </el-form>
 </template>
 
@@ -335,6 +326,7 @@ import {
 } from '../config/data'
 import { useStore } from 'vuex'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import reviewRecord from './reviewRecord.vue'
 export default defineComponent({
   name: '',
   setup(props, ctx) {
@@ -382,28 +374,11 @@ export default defineComponent({
       TwoLevelCoalClass,
       transports,
       settlement,
-      deleteTo,
-      tableData: [
-        {
-          number: '1',
-          start: '采购申请',
-          end: '审核',
-          user: '王大宝',
-          actions: '提交',
-          advice: '',
-          time: '2015-11-28T11:01:32'
-        },
-        {
-          number: '2',
-          start: '采购申请',
-          end: '审核',
-          user: '李打钩',
-          actions: '提交',
-          advice: '通过',
-          time: '2015-11-28T11:01:32'
-        }
-      ]
+      deleteTo
     }
+  },
+  components: {
+    reviewRecord
   }
 })
 </script>

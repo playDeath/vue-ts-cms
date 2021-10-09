@@ -1,5 +1,5 @@
 import { paramsType, DataType, depositDataType } from './type'
-import { tableRequest } from '@/network'
+import { tableRequest, commonRequest } from '@/network'
 import { ElMessage } from 'element-plus'
 const depositModule: any = {
   namespaced: true,
@@ -7,19 +7,29 @@ const depositModule: any = {
     return {
       deposits: [],
       total: 0,
-      deposit: null
+      deposit: {},
+      depositId: -100,
+      freezeStatus: '',
+      supplier: '',
+      purchapplyid: '',
+      current: 1,
+      size: 6
     }
   },
   actions: {
-    getQuoteDepositsByCondition(context: any, params: paramsType): void {
+    getQuoteDepositsByCondition(context: any): void {
       tableRequest
         .request<DataType>({
           method: 'POST',
-          url: `/tDeposit/qDepositsByCondition/${params.current}/${params.size}`,
+          url: `/tDeposit/qDepositsByCondition/${context.state.current}/${context.state.size}`,
           headers: {
             'Content-Type': 'application/json'
           },
-          data: params.bodyParams
+          data: {
+            freezeStatus: context.state.freezeStatus,
+            supplier: context.state.supplier,
+            purchapplyid: context.state.purchapplyid
+          }
         })
         .then((res) => {
           console.log(res)
@@ -34,15 +44,19 @@ const depositModule: any = {
           ElMessage.error('请检查网络')
         })
     },
-    getPromiseDepositsByCondition(context: any, params: paramsType): void {
+    getPromiseDepositsByCondition(context: any): void {
       tableRequest
         .request<DataType>({
           method: 'POST',
-          url: `/tDeposit/pDepositsByCondition/${params.current}/${params.size}`,
+          url: `/tDeposit/pDepositsByCondition/${context.state.current}/${context.state.size}`,
           headers: {
             'Content-Type': 'application/json'
           },
-          data: params.bodyParams
+          data: {
+            freezeStatus: context.state.freezeStatus,
+            supplier: context.state.supplier,
+            purchapplyid: context.state.purchapplyid
+          }
         })
         .then((res) => {
           console.log(res)
@@ -75,52 +89,42 @@ const depositModule: any = {
           ElMessage.error('请检查网络')
         })
     },
-    getMonthScoreByCondition(context: any, params: paramsType): void {
-      tableRequest
+    getDepositById(context: any, id: number) {
+      commonRequest
         .request<DataType>({
-          url: `/supplier/findMonthScore?current=${params.current}&limit=${params.size}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: params.bodyParams
+          url: `/tDeposit/detailedDeposit/${id}`
         })
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setSuppilers', res.data.data.records)
-            context.commit('setTotal', res.data.data.total)
+            context.commit('setDeposit', res.data.data)
+            context.commit('setDepositId', id)
           } else {
             ElMessage.error('出现一些错误')
           }
         })
-        .catch((error) => {
+        .catch(() => {
           ElMessage.error('请检查网络')
-          console.log(error)
         })
     },
-    getAnnualScoreByCondition(context: any, params: paramsType): void {
-      tableRequest
+    unFreezeDeposit(context: any) {
+      const id = context.state.depositId
+      commonRequest
         .request<DataType>({
-          url: `/supplier/findTotalScoreByPage?current=${params.current}&limit=${params.size}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: params.bodyParams
+          url: `/tDeposit/unfreeze/${id}`,
+          method: 'POST'
         })
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setSuppilers', res.data.data.records)
-            context.commit('setTotal', res.data.data.total)
+            ElMessage.success('解冻成功!')
+            context.dispatch('getPromiseDepositsByCondition')
           } else {
             ElMessage.error('出现一些错误')
           }
         })
-        .catch((error) => {
+        .catch(() => {
           ElMessage.error('请检查网络')
-          console.log(error)
         })
     }
   },
@@ -130,6 +134,24 @@ const depositModule: any = {
     },
     setTotal(state: any, total: number) {
       state.total = total
+    },
+    setDeposit(state: any, deposit: Array<any>) {
+      state.deposit = deposit
+    },
+    setDepositId(state: any, depositId: number) {
+      state.depositId = depositId
+    },
+    setFreezeStatus(state: any, freezeStatus: string) {
+      state.freezeStatus = freezeStatus
+    },
+    setSupplier(state: any, supplier: string) {
+      state.supplier = supplier
+    },
+    setPurchapplyId(state: any, purchapplyId: string) {
+      state.purchapplyid = purchapplyId
+    },
+    setCurrent(state: any, current: number) {
+      state.current = current
     }
   }
 }

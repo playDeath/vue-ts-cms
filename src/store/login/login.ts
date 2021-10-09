@@ -20,8 +20,6 @@ const loginModule = {
       state.userMenus = payload
     },
     setToken(state: loginInfoType, payload: any): void {
-      console.log('sddsdd')
-
       state.token = payload
     },
     setUserInfo(state: loginInfoType, payload: any): void {

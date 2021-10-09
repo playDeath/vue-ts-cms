@@ -63,6 +63,9 @@ export default defineComponent({
     const formRef = ref<InstanceType<typeof ElForm>>()
     // 发起登录请求
     const loginAccountAction = (keepPassword: boolean) => {
+      console.log(account.username)
+      console.log(account.password)
+
       formRef.value?.validate((flag) => {
         if (flag) {
           commonRequest
@@ -75,7 +78,6 @@ export default defineComponent({
                 ElMessage.success('登录成功!')
                 if (keepPassword) {
                   CacheControl.setCache('username', account.username)
-                  CacheControl.setCache('password', account.password)
                   CacheControl.setCache('token', res.headers.authorization)
                   CacheControl.setCache('userMenus', res.data.data)
                   CacheControl.setCache('userInfo', account.username)
@@ -91,22 +93,18 @@ export default defineComponent({
                   router.replace({
                     path: '/home'
                   })
+                  window.location.reload()
                 } else {
                   CacheControl.deleteCache('username')
-                  CacheControl.deleteCache('password')
                 }
               } else {
-                console.log(res.data.msg)
-
                 ElMessage.error(res.data.msg)
                 ctx.emit('getNewImage')
               }
             })
             .catch((error) => {
               console.log(error)
-
-              ElMessage.error(error)
-              ctx.emit('getNewImage')
+              ElMessage.error('网络出了点问题')
             })
         }
       })

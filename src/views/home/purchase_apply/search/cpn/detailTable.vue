@@ -5,6 +5,7 @@
     :model="sizeForm"
     label-width="80px"
     size="mini"
+    :disabled="disabled"
   >
     <el-tabs stretch v-model="chooseTab">
       <el-tab-pane label="基本情况" name="first">
@@ -22,6 +23,7 @@
                 type="datetime"
                 placeholder="选择日期时间"
                 v-model="sizeForm.bjtimeEnd"
+                value-format="YYYY-MM-DDTHH:MM:ss"
               >
               </el-date-picker> </el-form-item
           ></el-col>
@@ -46,6 +48,7 @@
                 type="datetime"
                 placeholder="选择日期时间"
                 v-model="sizeForm.operdate"
+                value-format="YYYY-MM-DDTHH:MM:ss"
               >
               </el-date-picker></el-form-item
           ></el-col>
@@ -57,6 +60,7 @@
                 type="datetimerange"
                 range-separator="至"
                 v-model="doubleDatePicker"
+                value-format="YYYY-MM-DDTHH:MM:ss"
               >
               </el-date-picker> </el-form-item
           ></el-col>
@@ -307,37 +311,39 @@
         </el-row>
       </el-tab-pane>
       <el-tab-pane label="审批记录" name="third">
-        <el-table :data="tableData" height="200" style="width: 100%">
-          <el-table-column prop="number" label="序号" />
-          <el-table-column prop="start" label="开始状态" />
-          <el-table-column prop="end" label="结束状态" />
-          <el-table-column prop="user" label="操作人员" />
-          <el-table-column prop="actions" label="操作" />
-          <el-table-column prop="advice" label="审批意见" />
-          <el-table-column prop="time" label="操作时间" />
+        <el-table
+          :data="auditRecords"
+          height="200"
+          style="width: 100%"
+          empty-text="无审批记录"
+        >
+          <el-table-column prop="audituser" label="审核人" />
+          <el-table-column
+            prop="auditdate"
+            label="审核日期"
+            :formatter="dateFormatter"
+          />
+          <el-table-column prop="auditoperate" label="操作" />
+          <el-table-column prop="auditcontent" label="审核意见" />
         </el-table>
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-            <el-form-item label="审核意见:">
-              <el-input type="textarea"></el-input></el-form-item
-          ></el-col>
-        </el-row>
-        <div class="footer">
-          <el-button type="primary" @click="editTo">审核通过</el-button>
-          <!-- <el-button type="danger" @click="deleteTo">驳回</el-button> -->
-          <el-button type="primary" @click="deleteTo">返回</el-button>
-        </div>
       </el-tab-pane>
     </el-tabs>
-    <div class="footer" v-if="listStatus === '草稿' || listStatus === '驳回'">
-      <el-button type="primary" @click="editTo">修改</el-button>
+    <div
+      class="footer"
+      v-if="
+        (listStatus === '草稿' && chooseTab !== 'third' && roleId == 3) ||
+        (listStatus === '驳回' && chooseTab !== 'third' && roleId == 3)
+      "
+    >
+      <el-button type="primary" @click="editTo">提交</el-button>
       <el-button type="danger" @click="deleteTo">删除</el-button>
     </div>
   </el-form>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent, computed, ref, watch } from 'vue'
+import moment from 'moment'
 import {
   coalTypes,
   TwoLevelCoalClass,
@@ -346,20 +352,42 @@ import {
 } from '../config/data'
 import { useStore } from 'vuex'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import emmiter from '@/utils/eventBus'
 export default defineComponent({
   name: '',
   setup(props, ctx) {
     const chooseTab = ref('first')
     const store = useStore()
+    const disabled = ref(false)
+    const roleId = computed(() => store.state.loginModule.userMenus[0].roleId)
     const listStatus = computed(
       () => store.state.purchaseApply.purchaseList?.applystate
     )
+    watch(listStatus, (newValue) => {
+      if (newValue !== '草稿' && newValue !== '驳回') {
+        disabled.value = true
+      } else {
+        disabled.value = false
+      }
+    })
     const sizeForm = computed(() => store.state.purchaseApply.purchaseList)
 
-    const doubleDatePicker = computed(() => [
-      store.state.purchaseApply.purchaseList.jhtime,
-      store.state.purchaseApply.purchaseList.jhtimeEnd
-    ])
+    const doubleDatePicker = ref()
+    emmiter.on('getDoubleDatePicker', (value) => {
+      doubleDatePicker.value = value
+    })
+    watch(
+      doubleDatePicker,
+      (newValue) => {
+        store.commit('purchaseApply/setPurchaseListDoubleDate', newValue)
+      },
+      {
+        deep: true
+      }
+    )
+    const auditRecords = computed(
+      () => store.state.purchaseApply.purchaseList.auditRecords
+    )
     const editTo = () => {
       // 发起修改请求
       store.dispatch('purchaseApply/updatePurchaseplan')
@@ -383,6 +411,9 @@ export default defineComponent({
           })
         })
     }
+    const dateFormatter = (row: any, column: any, cellValue: string) => {
+      return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD hh:mm:ss')
+    }
     return {
       sizeForm,
       coalTypes,
@@ -394,17 +425,10 @@ export default defineComponent({
       transports,
       settlement,
       deleteTo,
-      tableData: [
-        {
-          number: '1',
-          start: '采购申请',
-          end: '审核',
-          user: '李大钊',
-          actions: '提交',
-          advice: '',
-          time: '2015-11-28T11:01:32'
-        }
-      ]
+      auditRecords,
+      disabled,
+      roleId,
+      dateFormatter
     }
   }
 })

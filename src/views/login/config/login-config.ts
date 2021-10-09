@@ -6,8 +6,8 @@ export const rules = {
       trigger: 'change'
     },
     {
-      pattern: /^[a-z0-9\u4E00-\u9FFF]{1,10}$/,
-      message: '用户名必须在1-10个字符之间',
+      pattern: /^[a-z0-9\u4E00-\u9FFF]{1,15}$/,
+      message: '用户名必须在1-15个字符之间',
       trigger: 'change'
     }
   ],

@@ -14,7 +14,7 @@ export const contract = {
   tcitemList: [
     {
       calorievalue: '',
-      citemid: 1,
+      citemid: '',
       coaltype: '',
       contractid: '',
       qty: ''

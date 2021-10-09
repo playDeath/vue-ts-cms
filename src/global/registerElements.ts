@@ -38,7 +38,9 @@ import {
   ElOption,
   ElRadio,
   ElRadioGroup,
-  ElMessageBox
+  ElMessageBox,
+  ElUpload,
+  ElPopover
 } from 'element-plus'
 import { Edit } from '@element-plus/icons'
 
@@ -82,7 +84,9 @@ const components = [
   ElOption,
   ElRadio,
   ElRadioGroup,
-  ElMessageBox
+  ElMessageBox,
+  ElUpload,
+  ElPopover
 ]
 // 注册全局Element-plus组件
 export default function registerElements(app: App): void {

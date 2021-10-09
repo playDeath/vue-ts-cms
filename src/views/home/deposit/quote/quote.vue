@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
 import { selectors } from './config/data'
 import { useStore } from 'vuex'
@@ -51,7 +51,7 @@ export default defineComponent({
     const supplierName = ref('')
     const purchaseId = ref('')
     const selector = ref('全部')
-    let freezeStatus: number | string = ''
+    let freezeStatus = ''
     const changeSelector = (item: string) => {
       selector.value = item
       switch (selector.value) {
@@ -59,24 +59,19 @@ export default defineComponent({
           freezeStatus = ''
           break
         case '冻结中':
-          freezeStatus = 1
+          freezeStatus = '1'
           break
         case '已解冻':
-          freezeStatus = 0
+          freezeStatus = '0'
           break
       }
-      console.log(freezeStatus)
     }
     const searchByCondition = () => {
-      store.dispatch('depositModule/getQuoteDepositsByCondition', {
-        current: 0,
-        size: 5,
-        bodyParams: {
-          freezeStatus: freezeStatus,
-          supplier: supplierName.value,
-          purchapplyid: purchaseId.value
-        }
-      })
+      store.commit('depositModule/setCurrent', 1)
+      store.commit('depositModule/setFreezeStatus', freezeStatus)
+      store.commit('depositModule/setSupplier', supplierName.value)
+      store.commit('depositModule/setPurchapplyId', purchaseId.value)
+      store.dispatch('depositModule/getQuoteDepositsByCondition')
     }
     searchByCondition()
     return {

@@ -1,5 +1,6 @@
-import { paramsType, DataType, contractDataType } from './type'
+import { DataType, contractDataType } from './type'
 import { tableRequest, commonRequest } from '@/network'
+import emmiter from '@/utils/eventBus'
 import { ElMessage } from 'element-plus'
 const contractModule: any = {
   namespaced: true,
@@ -7,24 +8,30 @@ const contractModule: any = {
     return {
       contracts: [],
       total: 0,
-      contract: null
+      contract: null,
+      selector: '',
+      current: 1,
+      size: 5
     }
   },
   actions: {
-    getContractLists(context: any, params?: paramsType): void {
+    getContractListsByCondition(context: any): void {
       tableRequest
         .request<DataType>({
           method: 'POST',
-          url: `/tContract/getList`,
+          url: `/tContract/getContractByPage/${context.state.current}/${context.state.size}`,
           headers: {
             'Content-Type': 'application/json'
+          },
+          params: {
+            applystatenum: context.state.selector
           }
         })
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setContracts', res.data.data)
-            // context.commit('setTotal', res.data.data.total)
+            context.commit('setContracts', res.data.data.records)
+            context.commit('setTotal', res.data.data.total)
           } else {
             ElMessage.error('出现一些错误')
           }
@@ -43,6 +50,10 @@ const contractModule: any = {
           console.log(res)
           if (res.data.status === 200) {
             context.commit('setContract', res.data.data)
+            emmiter.emit('getContractDoubleTime', [
+              res.data.data.deliverytime,
+              res.data.data.deliverytimeend
+            ])
             // context.commit('setTotal', res.data.data.total)
           } else {
             ElMessage.error('出现一些错误')
@@ -64,18 +75,61 @@ const contractModule: any = {
           data: context.state.contract
         })
         .then((res) => {
-          console.log(context.state.contract)
-
           console.log(res)
           if (res.data.status === 200) {
-            if (state === '草稿') {
-              ElMessage.success(`保存${state}草稿`)
+            if (state === '1') {
+              ElMessage.success(`提交成功`)
+              context.commit('setContract', {})
             } else {
-              ElMessage.success(`合同已生效${state}`)
+              ElMessage.success(`保存草稿成功`)
             }
 
             // context.commit('setContract', res.data.data)
             // context.commit('setTotal', res.data.data.total)
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch(() => {
+          ElMessage.error('请检查网络')
+        })
+    },
+    deleteContractById(context: any, id: number) {
+      commonRequest
+        .request<DataType>({
+          method: 'DELETE',
+          url: `/tContract/removeContract/${id}`
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            context.commit('setContract', null)
+            ElMessage.success('删除成功!')
+            context.dispatch('getContractListsByCondition')
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch(() => {
+          ElMessage.error('请检查网络')
+        })
+    },
+    updateContract(context: any, status: string) {
+      context.commit('setContractState', status)
+      commonRequest
+        .request<DataType>({
+          method: 'POST',
+          url: `/tContract/updateContract`,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: context.state.contract
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            ElMessage.success('修改成功!')
+            context.dispatch('getContractListsByCondition')
           } else {
             ElMessage.error('出现一些错误')
           }
@@ -95,12 +149,18 @@ const contractModule: any = {
     setContract(state: any, contract: any) {
       state.contract = contract
     },
+    setCurrent(state: any, current: number) {
+      state.current = current
+    },
     setContractState(state: any, applystate: string) {
-      state.contract.applystatenum = applystate === '草稿' ? 0 : 1
+      state.contract.applystatenum = applystate
     },
     setContractDoubleTime(state: any, times: Array<any>) {
       state.contract.deliverytime = times[0]
       state.contract.deliverytimeend = times[1]
+    },
+    setSelector(state: any, flag: number | string) {
+      state.selector = flag
     }
   }
 }

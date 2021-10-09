@@ -7,7 +7,8 @@ const supplier: any = {
     return {
       suppliers: [],
       total: 0,
-      supplier: {}
+      supplier: {},
+      supplierId: ''
     }
   },
   actions: {
@@ -24,7 +25,7 @@ const supplier: any = {
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setSuppilers', res.data.data.records)
+            context.commit('setSuppliers', res.data.data.records)
             context.commit('setTotal', res.data.data.total)
           } else {
             ElMessage.error('出现一些错误')
@@ -44,14 +45,16 @@ const supplier: any = {
           console.log(res)
           if (res.data.status === 200) {
             context.commit(
-              'setSuppilerTfultbsupplier',
+              'setSupplierTfultbsupplier',
               res.data.data.tfultbsupplier
             )
             context.commit(
-              'setSuppilerAttachmentList',
+              'setSupplierAttachmentList',
               res.data.data.attachmentList
             )
-            context.commit('setSuppilerLists', res.data.data.list)
+            context.commit('setSupplierLists', res.data.data.list)
+            context.commit('setSupplierId', id)
+            context.commit('setSupplierStatus', res.data.data.statue)
           } else {
             ElMessage.error('出现一些错误')
           }
@@ -74,7 +77,7 @@ const supplier: any = {
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setSuppilers', res.data.data.records)
+            context.commit('setSuppliers', res.data.data.records)
             context.commit('setTotal', res.data.data.total)
           } else {
             ElMessage.error('出现一些错误')
@@ -90,15 +93,12 @@ const supplier: any = {
         .request<DataType>({
           url: `/supplier/findScoreMonthByID`,
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          data: payload
+          params: payload
         })
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setSuppiler', res.data.data)
+            context.commit('setSupplier', res.data.data)
           } else {
             ElMessage.error('出现一些错误')
           }
@@ -121,8 +121,95 @@ const supplier: any = {
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
-            context.commit('setSuppilers', res.data.data.records)
+            context.commit('setSuppliers', res.data.data.records)
             context.commit('setTotal', res.data.data.total)
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('请检查网络')
+          console.log(error)
+        })
+    },
+    getScoreYearByID(context: any, payload: any) {
+      commonRequest
+        .request<DataType>({
+          url: `/supplier/findTotalScoreById`,
+          method: 'POST',
+          params: payload
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            context.commit('setSupplier', res.data.data)
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('请检查网络')
+          console.log(error)
+        })
+    },
+    setScoreMonth(context: any, payload: any) {
+      commonRequest
+        .request<DataType>({
+          url: `/supplier/setScoreMonth`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: payload
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            ElMessage.success('成功!')
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('请检查网络')
+          console.log(error)
+        })
+    },
+    verifySupplier(context: any) {
+      commonRequest
+        .request<DataType>({
+          url: `/supplier/verifySup`,
+          method: 'POST',
+          params: {
+            supId: context.state.supplierId
+          }
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            ElMessage.success('审核成功')
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('请检查网络')
+          console.log(error)
+        })
+    },
+    rejectVerify(context: any) {
+      commonRequest
+        .request<DataType>({
+          url: `/supplier/notVerify`,
+          method: 'POST',
+          params: {
+            supId: context.state.supplierId
+          }
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            ElMessage.success('已驳回')
           } else {
             ElMessage.error('出现一些错误')
           }
@@ -134,47 +221,29 @@ const supplier: any = {
     }
   },
   mutations: {
-    setSuppilers(state: any, suppliers: Array<any>) {
+    setSuppliers(state: any, suppliers: Array<any>) {
       state.suppliers = suppliers
     },
     setTotal(state: any, total: number) {
       state.total = total
     },
-    setSuppilerTfultbsupplier(state: any, tfultbsupplier: any) {
+    setSupplierTfultbsupplier(state: any, tfultbsupplier: any) {
       state.supplier.tfultbsupplier = tfultbsupplier
     },
-    setSuppilerAttachmentList(state: any, Lists: any) {
-      state.supplier.attachmentList = [
-        {
-          attachmentId: '1',
-          attachmentName: '',
-          attachmentPath: '',
-          attachmentSize: '',
-          attachmentTime: '',
-          attachmentUser: '',
-          filename: '',
-          supplierId: ''
-        }
-      ]
+    setSupplierId(state: any, id: number | string) {
+      state.supplierId = id
     },
-    setSuppilerLists(state: any, Lists: any) {
-      state.supplier.Lists = [
-        {
-          id: '1',
-          orgCodeIn: '',
-          orgCodeOut: '',
-          supplierId: '',
-          supplierType: '',
-          verifyCode: '',
-          verifyResult: '',
-          verifyState: '',
-          verifyTime: '',
-          verifyUser: ''
-        }
-      ]
+    setSupplierAttachmentList(state: any, Lists: any) {
+      state.supplier.attachmentList = Lists
     },
-    setSuppiler(state: any, lists: any) {
+    setSupplierLists(state: any, Lists: any) {
+      state.supplier.Lists = Lists
+    },
+    setSupplier(state: any, lists: any) {
       state.supplier = lists
+    },
+    setSupplierStatus(state: any, status: string) {
+      state.status = status
     }
   }
 }

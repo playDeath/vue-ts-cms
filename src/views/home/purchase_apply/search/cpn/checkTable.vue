@@ -7,7 +7,12 @@
     empty-text="没有数据"
   >
     <el-table-column prop="purchapplyid" label="单据编号"> </el-table-column>
-    <el-table-column prop="operdate" label="创建日期" width="200">
+    <el-table-column
+      prop="operdate"
+      label="创建日期"
+      width="200"
+      :formatter="dateFormatter"
+    >
     </el-table-column>
     <el-table-column prop="coaltype" label="煤种"> </el-table-column>
     <el-table-column prop="jiesuanMode" label="结算方式"> </el-table-column>
@@ -34,13 +39,14 @@
     class="pagination"
   >
   </el-pagination>
-  <el-dialog title="采购清单" v-model="dialogTableVisible">
+  <el-dialog title="采购清单" v-model="dialogTableVisible" @close="closeTable">
     <detail-table @closeDialog="closeDialog"></detail-table>
   </el-dialog>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import moment from 'moment'
 import { useStore } from 'vuex'
 import detailTable from './detailTable.vue'
 export default defineComponent({
@@ -49,35 +55,32 @@ export default defineComponent({
     const store = useStore()
     // 决定弹窗是否展示
     const dialogTableVisible = ref(false)
-    let current = ref(0)
-    let size = ref(6)
+    const current = ref(0)
+    const size = ref(6)
     // let loading = ref(true)
-    let total = computed(() => {
-      return store.state.purchaseApply.total
-    })
+    let total = computed(() => store.state.purchaseApply.total)
     let lists = computed(() => store.state.purchaseApply.purchaseLists)
     const currentChange = (currentpage: number) => {
-      store.dispatch('purchaseApply/getPurchasePlanListByCondition', {
-        current: currentpage,
-        size: size.value,
-        bodyParams: {}
-      })
+      current.value = currentpage
+      store.commit('purchaseApply/setCurrent', current.value)
+      store.dispatch('purchaseApply/getPurchasePlanListByCondition')
     }
-    const loadingTableInfo = () => {
-      store.dispatch('purchaseApply/getPurchasePlanListByCondition', {
-        current: current.value,
-        size: size.value,
-        bodyParams: {}
-      })
-    }
-    loadingTableInfo()
     const showDialog = (index: number, rows: Array<any>) => {
       dialogTableVisible.value = true
       store.dispatch('purchaseApply/getPurchaseById', rows[index].purchapplyid)
     }
     const closeDialog = () => {
       dialogTableVisible.value = false
-      loadingTableInfo()
+      store.commit('purchaseApply/setPurchaseId', '')
+      store.dispatch('purchaseApply/getPurchasePlanListByCondition')
+    }
+    const closeTable = () => {
+      console.log('关闭')
+
+      store.commit('purchaseApply/setPurchaseId', '')
+    }
+    const dateFormatter = (row: any, column: any, cellValue: string) => {
+      return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD')
     }
     return {
       size,
@@ -87,7 +90,9 @@ export default defineComponent({
       detailTable,
       dialogTableVisible,
       showDialog,
-      closeDialog
+      closeDialog,
+      dateFormatter,
+      closeTable
       // loading
     }
   },

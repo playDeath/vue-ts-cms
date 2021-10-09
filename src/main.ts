@@ -14,7 +14,6 @@ import cache from './utils/cache'
 const app = createApp(App)
 app.use(useGlobal)
 app.use(store)
-console.log('sdsdsd')
 cache.getCache('userMenus') !== null ? setDynamicRouter() : null
 
 // app.use(router) 之后 回去调用router里面的install

@@ -11,6 +11,7 @@
               v-model="select_year"
               type="year"
               placeholder="选择年"
+              value-format="YYYY"
             >
             </el-date-picker>
           </div>
@@ -46,13 +47,13 @@ export default defineComponent({
       let bodyParams = {}
       if (supplierName.value !== '' && select_year.value === '') {
         bodyParams = { name: supplierName.value }
-      } else if (supplierName.value === '' && select_year.value !== '全部') {
+      } else if (supplierName.value === '' && select_year.value !== '') {
         bodyParams = { year: select_year.value }
       } else if (supplierName.value !== '' && select_year.value !== '') {
         bodyParams = { name: supplierName.value, year: select_year.value }
       }
       store.dispatch('supplier/getAnnualScoreByCondition', {
-        current: 0,
+        current: 1,
         size: 5,
         bodyParams
       })

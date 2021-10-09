@@ -25,10 +25,6 @@
         <el-form-item label="供应商名称（乙方）:">
           <el-input v-model="contract.bparty"></el-input> </el-form-item
       ></el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="6" :xl="8">
-        <el-form-item label="操作员:">
-          <el-input v-model="contract.operuser"></el-input> </el-form-item
-      ></el-col>
     </el-row>
     <el-row :gutter="20">
       <el-col :xs="8" :sm="8" :md="8" :lg="8" :xl="8">
@@ -116,7 +112,7 @@
             </el-option>
           </el-select> </el-form-item
       ></el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="4" :xl="8">
+      <!-- <el-col :xs="8" :sm="8" :md="8" :lg="4" :xl="8">
         <el-form-item label="二级煤种:">
           <el-select v-model="item.coalclass" clearable placeholder="请选择">
             <el-option
@@ -127,7 +123,7 @@
             >
             </el-option>
           </el-select> </el-form-item
-      ></el-col>
+      ></el-col> -->
       <el-col :xs="8" :sm="8" :md="8" :lg="4" :xl="8">
         <el-form-item label="采购数量:">
           <el-input v-model="item.qty">
@@ -156,20 +152,21 @@
       </el-col>
     </el-row>
     <!-- <el-row>
-      <el-col :xs="16" :sm="16" :md="16" :lg="16" :xl="16">
-        <el-form-item label="备注:">
-          <el-input
-            type="textarea"
-            v-model="contract."
-          ></el-input> </el-form-item
-      ></el-col>
+      <el-upload
+        class="upload-demo"
+        action="http://47.111.14.150:8090/file/upload"
+        :on-change="handleChange"
+        :file-list="fileList"
+      >
+        <el-button size="small" type="primary">点击上传</el-button>
+        <template #tip>
+          <div class="el-upload__tip">只能上传 pdf 文件，且不超过 500kb</div>
+        </template>
+      </el-upload>
     </el-row> -->
     <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" class="footer">
-      <el-button type="primary" @click="addContract('生效')">提交</el-button>
-      <el-button
-        type="primary"
-        @click="addContract('草稿')"
-        class="el-btn-distant"
+      <el-button type="primary" @click="addContract('1')">提交</el-button>
+      <el-button type="primary" @click="addContract('0')" class="el-btn-distant"
         >保存</el-button
       >
     </el-col>
@@ -192,7 +189,7 @@ export default defineComponent({
   setup() {
     const store = useStore()
     const contract = computed(() => store.state.contractModule.contract)
-    const doubleDatePicker = ref(['', ''])
+    let doubleDatePicker = ref(['', ''])
     watch(
       doubleDatePicker,
       (newValue) => {
@@ -203,10 +200,9 @@ export default defineComponent({
       }
     )
     const addLists = () => {
-      const id = store.state.contractModule.contract.tcitemList.length
       store.state.contractModule.contract.tcitemList.push({
         calorievalue: '',
-        citemid: id + 1,
+        citemid: '',
         coaltype: '',
         contractid: '',
         qty: ''
@@ -219,6 +215,9 @@ export default defineComponent({
     const addContract = (state: string): void => {
       store.dispatch('contractModule/addContract', { state })
     }
+    // const handleChange = (file, fileList) => {
+    //   this.fileList = fileList.slice(-3)
+    // }
     return {
       coalTypes,
       TwoLevelCoalClass,
@@ -237,6 +236,7 @@ export default defineComponent({
 </script>
 <style scoped lang="less">
 .footer {
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   width: 100%;

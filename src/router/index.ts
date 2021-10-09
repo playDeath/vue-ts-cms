@@ -36,7 +36,7 @@ router.beforeEach((to, next) => {
   } else {
     if (Cache.getCache('token') !== null) {
       return {
-        path: '/home/'
+        path: '/home'
       }
     }
   }

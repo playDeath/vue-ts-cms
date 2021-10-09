@@ -12,13 +12,15 @@
     >
     </el-table-column>
     <el-table-column label="操作" width="120">
-      <el-button
-        @click.prevent="deleteRow(scope.$index, tableData)"
-        type="text"
-        size="small"
-      >
-        查看
-      </el-button>
+      <template v-slot="scope">
+        <el-button
+          @click.prevent="getDetailInfo(scope.$index, tableData)"
+          type="text"
+          size="small"
+        >
+          查看
+        </el-button>
+      </template>
     </el-table-column>
   </el-table>
   <el-pagination background layout="prev, pager, next" :total="total">
@@ -30,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import detailTable from './detailTable.vue'
+import detailTable from '../../promise/cpn/detailTable.vue'
 import { useStore } from 'vuex'
 export default defineComponent({
   name: '',
@@ -42,14 +44,19 @@ export default defineComponent({
       if (row.freezeStatus === 1) {
         return '冻结中'
       }
-      return '已冻结'
+      return '已解冻'
     }
     const dialogTableVisible = ref(false)
+    const getDetailInfo = (index: number, rows: Array<any>) => {
+      dialogTableVisible.value = true
+      store.dispatch('depositModule/getDepositById', rows[index].idDeposit)
+    }
     return {
       tableData,
       dialogTableVisible,
       total,
-      statusFormat
+      statusFormat,
+      getDetailInfo
     }
   },
   components: {

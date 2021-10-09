@@ -2,16 +2,13 @@
   <div class="check">
     <div class="check-block">
       <el-form ref="form" label-width="95px" class="form" load>
-        <!-- <el-form-item label="供应商名称:" class="form-item">
-          <el-input disabled></el-input>
-        </el-form-item> -->
         <el-form-item label="采购单号:" class="form-item">
           <el-input v-model="purchaseId"></el-input>
         </el-form-item>
         <el-form-item label="采购单状态:" class="form-item">
           <el-dropdown @command="changeSelector">
             <span class="el-dropdown-link">
-              {{ selector }}<i class="el-icon-arrow-down el-icon--right"></i>
+              {{ status }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
@@ -40,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import checkTable from './cpn/checkTable.vue'
 import { selectors } from './config/data'
 import { useStore } from 'vuex'
@@ -49,31 +46,20 @@ export default defineComponent({
   setup() {
     const store = useStore()
     const purchaseId = ref('')
-    watch(
-      purchaseId,
-      (id) => {
-        store.commit('purchaseApply/setPurchaseId', id)
-      },
-      {
-        deep: true
-      }
-    )
-    let selector = computed(() => store.state.purchaseApply.selector)
+    const status = ref('全部')
     const changeSelector = (item: string) => {
-      store.commit('purchaseApply/setSelector', item)
+      status.value = item
     }
     const searchByCondition = () => {
-      store.dispatch('purchaseApply/getPurchasePlanListByCondition', {
-        current: 0,
-        size: 5,
-        bodyParams: {
-          purchaseId: purchaseId.value,
-          state: selector.value === '全部' ? '' : selector.value
-        }
-      })
+      let state = status.value === '全部' ? '' : status.value
+      store.commit('purchaseApply/setCurrent', 1)
+      store.commit('purchaseApply/setPurchaseId', purchaseId.value)
+      store.commit('purchaseApply/setSelector', state)
+      store.dispatch('purchaseApply/getPurchasePlanListByCondition')
     }
+    searchByCondition()
     return {
-      selector,
+      status,
       changeSelector,
       selectors,
       purchaseId,

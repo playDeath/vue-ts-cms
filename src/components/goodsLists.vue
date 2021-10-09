@@ -1,7 +1,6 @@
 <template>
   <div v-if="itemList">
     <el-table :data="itemList" style="width: 100%">
-      <el-table-column prop="citemid" label="合同项ID"> </el-table-column>
       <el-table-column prop="coaltype" label="煤种"> </el-table-column>
       <el-table-column prop="qty" label="采购数量"> </el-table-column>
       <el-table-column prop="coaltype" label="煤种"> </el-table-column>

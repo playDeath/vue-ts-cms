@@ -12,18 +12,29 @@
     >
     </el-table-column>
     <el-table-column label="操作" width="120">
-      <el-button
-        @click.prevent="deleteRow(scope.$index, tableData)"
-        type="text"
-        size="small"
-      >
-        查看
-      </el-button>
+      <template v-slot="scope">
+        <el-button
+          @click.prevent="getDetailInfo(scope.$index, tableData)"
+          v-if="scope.row.freezeStatus === 0"
+          type="primary"
+          size="small"
+        >
+          查看
+        </el-button>
+        <el-button
+          @click.prevent="getDetailInfo(scope.$index, tableData)"
+          v-else
+          type="success"
+          size="small"
+        >
+          解冻
+        </el-button>
+      </template>
     </el-table-column>
   </el-table>
   <el-pagination background layout="prev, pager, next" :total="total">
   </el-pagination>
-  <el-dialog v-model="dialogTableVisible" title="详细信息">
+  <el-dialog v-model="dialogTableVisible" title="保证金详情">
     <detail-table @closeDialog="closeDialog"></detail-table>
   </el-dialog>
 </template>
@@ -42,14 +53,23 @@ export default defineComponent({
       if (row.freezeStatus === 1) {
         return '冻结中'
       }
-      return '已冻结'
+      return '已解冻'
     }
     const dialogTableVisible = ref(false)
+    const getDetailInfo = (index: number, rows: Array<any>) => {
+      dialogTableVisible.value = true
+      store.dispatch('depositModule/getDepositById', rows[index].idDeposit)
+    }
+    const closeDialog = () => {
+      dialogTableVisible.value = false
+    }
     return {
       tableData,
       dialogTableVisible,
       total,
-      statusFormat
+      statusFormat,
+      getDetailInfo,
+      closeDialog
     }
   },
   components: {

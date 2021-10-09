@@ -59,12 +59,12 @@ export default defineComponent({
       if (supplierName.value !== '' && selector.value === '全部') {
         bodyParams = { name: supplierName.value }
       } else if (supplierName.value === '' && selector.value !== '全部') {
-        bodyParams = { state: selector.value }
+        bodyParams = { status: selector.value }
       } else if (supplierName.value !== '' && selector.value !== '全部') {
-        bodyParams = { name: supplierName.value, state: selector.value }
+        bodyParams = { name: supplierName.value, status: selector.value }
       }
       store.dispatch('supplier/getMonthScoreByCondition', {
-        current: 0,
+        current: 1,
         size: 5,
         bodyParams
       })

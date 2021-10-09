@@ -5,6 +5,9 @@ import supplier from './home/supplier'
 import depositModule from './home/deposit'
 import contractModule from './home/contract'
 import userModule from './home/user'
+import purchaseExcutionModule from './home/purchase_excution'
+import newsModule from './home/news'
+import selectionSupplierModule from './home/selection_suppliers'
 const store = createStore({
   state() {
     return {
@@ -18,7 +21,10 @@ const store = createStore({
     supplier,
     depositModule,
     contractModule,
-    userModule
+    userModule,
+    purchaseExcutionModule,
+    newsModule,
+    selectionSupplierModule
   }
 })
 export const setDynamicRouter = (): void => {

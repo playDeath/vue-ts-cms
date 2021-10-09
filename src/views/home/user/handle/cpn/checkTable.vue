@@ -21,13 +21,22 @@
         >
           查看
         </el-button>
-        <el-button
-          @click.prevent="editUserInfo(scope.$index, users)"
-          size="mini"
-          type="success"
+        <el-popover
+          placement="top-start"
+          :width="200"
+          trigger="hover"
+          content="修改用户信息和设置密码"
         >
-          修改
-        </el-button>
+          <template #reference>
+            <el-button
+              @click.prevent="editUserInfo(scope.$index, users)"
+              size="mini"
+              type="success"
+            >
+              修改
+            </el-button>
+          </template>
+        </el-popover>
         <el-button
           @click.prevent="deleteUserInfo(scope.$index, users)"
           size="mini"

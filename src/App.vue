@@ -15,9 +15,6 @@ export default defineComponent({
   components: {
     // home
     // login
-  },
-  setup() {
-    console.log('我还没被转化为真实Dom')
   }
 })
 </script>

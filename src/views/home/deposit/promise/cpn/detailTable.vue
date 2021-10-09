@@ -5,9 +5,10 @@
     :model="sizeForm"
     label-width="80px"
     size="mini"
+    disabled
   >
     <el-tabs stretch v-model="chooseTab">
-      <el-tab-pane label="基本情况" name="first">
+      <el-tab-pane label="采购信息" name="first">
         <el-row :gutter="20">
           <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
             <el-form-item label="单据编号:">
@@ -306,22 +307,99 @@
           ></el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="采购进展" name="third">
-        <el-table :data="tableData" height="250" style="width: 100%">
-          <el-table-column prop="number" label="序号" />
-          <el-table-column prop="start" label="开始状态" />
-          <el-table-column prop="end" label="结束状态" />
-          <el-table-column prop="user" label="操作人员" />
-          <el-table-column prop="actions" label="操作" />
-          <el-table-column prop="advice" label="审批意见" />
-          <el-table-column prop="time" label="操作时间" />
-        </el-table>
+      <el-tab-pane label="保证金信息" name="third">
+        <el-row :gutter="20">
+          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+            <el-form-item label="报价数量:">
+              <el-input v-model="sizeForm.supplyQuantity">
+                <template #suffix>
+                  <span>(万吨)</span>
+                </template></el-input
+              >
+            </el-form-item></el-col
+          >
+          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+            <el-form-item label="每吨煤运费:">
+              <el-input v-model="sizeForm.coalPerTon">
+                <template #suffix>
+                  <span>(元/吨)</span>
+                </template></el-input
+              >
+            </el-form-item></el-col
+          >
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+            <el-form-item label="每吨煤价格:">
+              <el-input v-model="sizeForm.freightPerTon">
+                <template #suffix>
+                  <span>(元/吨)</span>
+                </template></el-input
+              >
+            </el-form-item></el-col
+          >
+          <el-col
+            :xs="12"
+            :sm="12"
+            :md="12"
+            :lg="12"
+            :xl="12"
+            v-if="sizeForm.depositType === '报价保证金'"
+          >
+            <el-form-item label="报价保证金单价:">
+              <el-input v-model="sizeForm.quotebondnmber">
+                <template #suffix>
+                  <span>(元/吨)</span>
+                </template></el-input
+              >
+            </el-form-item></el-col
+          >
+          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12" v-else>
+            <el-form-item label="履约保证金单价:">
+              <el-input v-model="sizeForm.performbondnmber">
+                <template #suffix>
+                  <span>(元/吨)</span>
+                </template></el-input
+              >
+            </el-form-item></el-col
+          >
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+            <el-form-item label="保证金金额:">
+              <el-input v-model="sizeForm.freezeAmount">
+                <template #suffix>
+                  <span>元</span>
+                </template></el-input
+              >
+            </el-form-item></el-col
+          >
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :xs="16" :sm="16" :md="16" :lg="16" :xl="16">
+            <el-form-item label="保证金要求:">
+              <el-input
+                type="textarea"
+                v-model="sizeForm.bondRemark"
+              ></el-input></el-form-item
+          ></el-col>
+        </el-row>
+        <el-form :disabled="disabled">
+          <div class="footer">
+            <el-button
+              type="success"
+              size="small"
+              @click="unfreezeDeposit"
+              v-if="
+                sizeForm.freezeStatus === 1 &&
+                sizeForm.depositType !== '报价保证金'
+              "
+              >确认解冻</el-button
+            >
+          </div>
+        </el-form>
       </el-tab-pane>
     </el-tabs>
-    <div class="footer" v-if="listStatus === '草稿' || listStatus === '驳回'">
-      <el-button type="primary" @click="editTo">修改</el-button>
-      <el-button type="danger" @click="deleteTo">删除</el-button>
-    </div>
   </el-form>
 </template>
 
@@ -337,72 +415,33 @@ import { useStore } from 'vuex'
 import { ElMessage, ElMessageBox } from 'element-plus'
 export default defineComponent({
   name: '',
-  setup(props, ctx) {
+  setup(props, { emit }) {
     const chooseTab = ref('first')
     const store = useStore()
+    const disabled = ref(false)
     const listStatus = computed(
-      () => store.state.purchaseApply.purchaseList?.applystate
+      () => store.state.depositModule.deposit?.applystate
     )
-    const sizeForm = computed(() => store.state.purchaseApply.purchaseList)
-
-    const doubleDatePicker = computed(() => [
-      store.state.purchaseApply.purchaseList.jhtime,
-      store.state.purchaseApply.purchaseList.jhtimeEnd
+    const sizeForm = computed(() => store.state.depositModule.deposit)
+    const unfreezeDeposit = () => {
+      store.dispatch('depositModule/unFreezeDeposit')
+      emit('closeDialog')
+    }
+    const doubleDatePicker = ref([
+      store.state.depositModule.deposit?.jhtime,
+      store.state.depositModule.deposit?.jhtimeEnd
     ])
-    const editTo = () => {
-      // 发起修改请求
-      store.dispatch('purchaseApply/updatePurchaseplan')
-      // 关闭弹窗
-      ctx.emit('closeDialog')
-    }
-    const deleteTo = () => {
-      ElMessageBox.confirm('您当前正在进行删除操作，请确认后再继续', '警告', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          store.dispatch('purchaseApply/deletePurchaseplan')
-          ctx.emit('closeDialog')
-        })
-        .catch(() => {
-          ElMessage({
-            type: 'info',
-            message: '删除操作已取消'
-          })
-        })
-    }
     return {
       sizeForm,
       coalTypes,
       doubleDatePicker,
       listStatus,
       chooseTab,
-      editTo,
       TwoLevelCoalClass,
       transports,
       settlement,
-      deleteTo,
-      tableData: [
-        {
-          number: '1',
-          start: '采购申请',
-          end: '审核',
-          user: '王大宝',
-          actions: '提交',
-          advice: '',
-          time: '2015-11-28T11:01:32'
-        },
-        {
-          number: '2',
-          start: '采购申请',
-          end: '审核',
-          user: '李打钩',
-          actions: '提交',
-          advice: '通过',
-          time: '2015-11-28T11:01:32'
-        }
-      ]
+      disabled,
+      unfreezeDeposit
     }
   }
 })

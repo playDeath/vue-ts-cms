@@ -49,7 +49,7 @@ export default defineComponent({
     align-items: center;
     width: 100%;
     height: 100%;
-    background: url('~@/assets/img/background1.jpg') 80% 90%;
+    background: url('~@/assets/img/background1.jpg') 1650px 800px;
     .blur-window {
       width: 70%;
       height: 26rem;

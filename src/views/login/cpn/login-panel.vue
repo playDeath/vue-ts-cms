@@ -52,14 +52,12 @@ export default defineComponent({
           url: '/kaptcha'
         })
         .then((res) => {
-          console.log(res)
-
           verify_code.value = res.data.data.kaptchaImg
         })
         .catch((error) => {
           console.log(error)
 
-          ElMessage.error(error)
+          ElMessage.error('请检查网络')
         })
     }
     getVerifyCode()

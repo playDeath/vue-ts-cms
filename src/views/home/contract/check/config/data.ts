@@ -1,4 +1,4 @@
-export const selectors = ['全部', '草稿', '提交', '审核', '驳回', '发布']
+export const selectors = ['全部', '草稿', '生效']
 export const coalTypes = [
   {
     value: '烟煤',
@@ -31,7 +31,7 @@ export const coalTypes = [
 ]
 export const TwoLevelCoalClass = [
   {
-    value: '原煤',
+    value: '1',
     label: '原煤'
   }
 ]
@@ -69,5 +69,15 @@ export const settlement = [
   {
     value: '烟款税票',
     label: '烟款税票'
+  }
+]
+export const acceptance = [
+  {
+    value: '到厂验收',
+    label: '到厂验收'
+  },
+  {
+    value: '到厂第三方验收',
+    label: '到厂第三方验收'
   }
 ]

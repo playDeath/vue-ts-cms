@@ -154,7 +154,10 @@
             <el-radio label="0">不要求</el-radio>
             <el-radio label="1">要求</el-radio></el-radio-group
           >
-          <el-input v-model="purchaseList.performbondnmber">
+          <el-input
+            v-model="purchaseList.performbondnmber"
+            :disabled="purchaseList.isPerformbond === '0'"
+          >
             <template #suffix>
               <span>(元)</span>
             </template>
@@ -167,7 +170,10 @@
             <el-radio label="0">不要求</el-radio>
             <el-radio label="1">要求</el-radio></el-radio-group
           >
-          <el-input v-model="purchaseList.quotebondnmber">
+          <el-input
+            v-model="purchaseList.quotebondnmber"
+            :disabled="purchaseList.isQuotebond === '0'"
+          >
             <template #suffix>
               <span>(元)</span>
             </template>

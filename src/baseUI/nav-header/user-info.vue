@@ -44,6 +44,7 @@ export default defineComponent({
       CacheControl.deleteCache('userMenus')
       CacheControl.deleteCache('userInfo')
       router.push('/login')
+      // window.location.reload()
     }
     const showPersonInfo = () => {
       emitter.emit('showBar')

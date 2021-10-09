@@ -1,5 +1,6 @@
 import { paramsType, DataType, purchaseApplyDataType } from './type'
 import { tableRequest, commonRequest } from '@/network'
+import emmiter from '@/utils/eventBus'
 import { ElMessage } from 'element-plus'
 const purchaseApply: any = {
   namespaced: true,
@@ -8,37 +9,45 @@ const purchaseApply: any = {
       purchaseLists: [],
       total: 0,
       purchaseId: '',
-      selector: '全部',
-      purchaseList: null
+      selector: '',
+      purchaseList: null,
+      doubleDatePicker: ['', ''],
+      current: 1,
+      size: 6
     }
   },
   actions: {
-    getPurchasePlanListByCondition(context: any, params: paramsType): void {
+    getPurchasePlanListByCondition(context: any): void {
       tableRequest
         .request<DataType>({
-          url: `/tPurchaseplan/getPurchasePlanListByCondition/${params.current}/${params.size}`,
+          url: `/tPurchaseplan/getPurchasePlanListByCondition/${context.state.current}/${context.state.size}`,
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          data: params.bodyParams
+          data: {
+            purchaseId: context.state.purchaseId,
+            state: context.state.selector
+          }
         })
         .then((res) => {
           console.log(res)
           if (res.data.status === 200) {
             context.commit('setPurchaseLists', res.data.data.records)
             context.commit('setTotal', res.data.data.total)
+          } else {
+            ElMessage.error('出现一些错误')
           }
         })
         .catch((error) => {
-          ElMessage.error('出现一些错误')
+          ElMessage.error('请检查网络')
           console.log(error)
         })
     },
     getPurchaseById(context: any, id: number) {
       tableRequest
         .request<DataType>({
-          url: '/tPurchaseplan/getPurchaseplanByPurchapplyid',
+          url: '/tPurchaseplan/getPurchasePlanWithAudit',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -48,14 +57,28 @@ const purchaseApply: any = {
           }
         })
         .then((res) => {
-          context.commit('setPurchaseList', res.data)
-          context.commit('setPurchaseId', id)
+          if (res.data.status === 200) {
+            context.commit('setPurchaseList', res.data.data)
+            context.commit('setPurchaseId', id)
+            context.commit('setDoubleDatePicker', [
+              res.data.data.jhtime,
+              res.data.data.jhtimeEnd
+            ])
+            emmiter.emit('getDoubleDatePicker', [
+              res.data.data.jhtime,
+              res.data.data.jhtimeEnd
+            ])
+          } else {
+            ElMessage.error('出现一些错误')
+          }
         })
         .catch((error) => {
           console.log(error)
+          ElMessage.error('请检查网络')
         })
     },
     updatePurchaseplan(context: any) {
+      context.commit('setPurchaseListApplyState', '提交')
       commonRequest
         .request<DataType>({
           url: '/tPurchaseplan/updatePurchaseplan',
@@ -66,7 +89,7 @@ const purchaseApply: any = {
           data: context.state.purchaseList
         })
         .then((res) => {
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             ElMessage.success('修改成功')
           } else {
             ElMessage.error('出现一些错误')
@@ -92,18 +115,20 @@ const purchaseApply: any = {
         .then((res) => {
           console.log(res)
 
-          if (res.status === 200) {
+          if (res.data.status === 200) {
             ElMessage.success('删除成功')
           } else {
             ElMessage.error('出现一些错误')
           }
         })
         .catch((error) => {
-          ElMessage.error('出现一些错误')
+          ElMessage.error('网络异常')
           console.log(error)
         })
     },
     addPurchaseplan(context: any, payload: any) {
+      console.log('jack lie')
+
       context.commit('setPurchaseListApplyState', payload.state)
       commonRequest
         .request<DataType>({
@@ -115,14 +140,16 @@ const purchaseApply: any = {
           data: context.state.purchaseList
         })
         .then((res) => {
-          if (res.status === 200) {
+          console.log(res)
+
+          if (res.data.status === 200) {
             ElMessage.success(`${payload.msg}${payload.state}成功`)
           } else {
             ElMessage.error('出现一些错误')
           }
         })
         .catch((error) => {
-          ElMessage.error('出现一些错误')
+          ElMessage.error('请检查网络')
           console.log(error)
         })
     },
@@ -133,17 +160,63 @@ const purchaseApply: any = {
           method: 'POST'
         })
         .then((res) => {
-          if (res.status === 200) {
-            context.commit('setpurchaseListUnitAndOperator', {
-              operuser: res.data.operuser,
-              unit: res.data.unit
+          if (res.data.status === 200) {
+            console.log(res)
+
+            context.commit('setpurchaseListUnitAndOperatorAndPurchapplyid', {
+              operuser: res.data.data.operuser,
+              unit: res.data.data.unit,
+              purchapplyid: res.data.data.purchapplyid
             })
           } else {
             ElMessage.error('出现一些错误')
           }
         })
         .catch((error) => {
-          ElMessage.error('出现一些错误')
+          ElMessage.error('网络出现问题')
+          console.log(error)
+        })
+    },
+    getPurchaseplanListToAudit(context: any) {
+      tableRequest
+        .request<DataType>({
+          url: `/tPurchaseplan/getPurchaseplanListToAudit/${context.state.current}/${context.state.size}`,
+          method: 'POST'
+        })
+        .then((res) => {
+          console.log(res)
+          if (res.data.status === 200) {
+            context.commit('setPurchaseLists', res.data.data.records)
+            context.commit('setTotal', res.data.data.total)
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('请检查网络')
+          console.log(error)
+        })
+    },
+    addAuditRecords(context: any, params: paramsType) {
+      commonRequest
+        .request<DataType>({
+          url: '/tAuditRecords/addAuditRecords',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: params
+        })
+        .then((res) => {
+          if (res.data.status === 200) {
+            ElMessage.success(`成功`)
+            context.dispatch('getPurchaseplanListToAudit')
+          } else {
+            ElMessage.error('出现一些错误')
+          }
+        })
+        .catch((error) => {
+          ElMessage.error('请检查网络')
           console.log(error)
         })
     }
@@ -154,6 +227,9 @@ const purchaseApply: any = {
     },
     setTotal(state: any, total: number) {
       state.total = total
+    },
+    setCurrent(state: any, current: number) {
+      state.current = current
     },
     setSelector(state: any, item: string) {
       state.selector = item
@@ -171,9 +247,13 @@ const purchaseApply: any = {
       state.purchaseList.jhtime = doubleDate[0]
       state.purchaseList.jhtimeEnd = doubleDate[1]
     },
-    setpurchaseListUnitAndOperator(state: any, payload: any) {
+    setpurchaseListUnitAndOperatorAndPurchapplyid(state: any, payload: any) {
       state.purchaseList.unit = payload.unit
       state.purchaseList.operuser = payload.operuser
+      state.purchaseList.purchapplyid = payload.purchapplyid
+    },
+    setDoubleDatePicker(state: any, arr: string) {
+      state.doubleDatePicker = arr
     }
   }
 }

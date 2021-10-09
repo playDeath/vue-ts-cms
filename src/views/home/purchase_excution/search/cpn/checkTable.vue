@@ -1,50 +1,78 @@
 <template>
-  <el-table :data="tableData" style="width: 100%" class="el-table-self" stripe>
-    <el-table-column prop="number" label="序号" width="150"> </el-table-column>
-    <el-table-column prop="name" label="单据编号" width="150">
+  <el-table :data="excutions" style="width: 95%" class="el-table-self" stripe>
+    <el-table-column prop="purchexecuteid" fixed label="采购执行ID" width="150">
     </el-table-column>
-    <el-table-column prop="org_code" label="创建日期" width="150">
+    <el-table-column prop="expressNumber" fixed label="单据编号" width="150">
     </el-table-column>
-    <el-table-column prop="legal_person" label="煤种" width="150">
+    <el-table-column
+      prop="userUuid"
+      label="用户ID"
+      width="140"
+    ></el-table-column>
+    <el-table-column prop="coaltype" label="煤种" width="150">
     </el-table-column>
-    <el-table-column prop="phone" label="数量(万吨)" width="150">
+    <el-table-column prop="operuser" label="操作员" width="150">
     </el-table-column>
-    <el-table-column prop="method" label="结算方式" width="150">
-    </el-table-column>
-    <el-table-column prop="person" label="发起人" width="150">
-    </el-table-column>
-    <el-table-column prop="status" label="状态" width="140"
-      >已提交</el-table-column
+    <el-table-column
+      prop="operdate"
+      label="操作日期"
+      width="190"
+      :formatter="dateFormatter"
     >
-    <el-table-column label="操作" width="120">
-      <el-button
-        @click.prevent="deleteRow(scope.$index, tableData)"
-        type="text"
-        size="small"
-      >
-        查看
-      </el-button>
     </el-table-column>
+    <el-table-column prop="transportMode" label="运算方式" width="150">
+    </el-table-column>
+    <el-table-column prop="qty" label="采购数量(万吨)" width="150">
+    </el-table-column>
+    <el-table-column
+      prop="status"
+      label="订单状态"
+      width="140"
+      fixed="right"
+    ></el-table-column>
   </el-table>
-  <el-pagination background layout="prev, pager, next" :total="50">
+  <el-pagination
+    background
+    layout="prev, pager, next"
+    :total="total"
+    :page-size="6"
+    @current-change="currentChange"
+  >
   </el-pagination>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { data } from '../config/data'
+import { defineComponent, computed } from 'vue'
+import { useStore } from 'vuex'
+import moment from 'moment'
 export default defineComponent({
   name: '',
   setup() {
-    const tableData = data
+    const store = useStore()
+    const excutions = computed(
+      () => store.state.purchaseExcutionModule.excutions
+    )
+    const total = computed(() => store.state.purchaseExcutionModule.total)
+    const currentChange = (item: number) => {
+      store.commit('purchaseExcutionModule/setCurrent', item)
+      store.dispatch('purchaseExcutionModule/getPurchaseExcutionsByCondition')
+    }
+    const dateFormatter = (row: any, column: any, cellValue: string) => {
+      return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD hh:mm:ss')
+    }
     return {
-      tableData
+      excutions,
+      total,
+      currentChange,
+      dateFormatter
     }
   }
 })
 </script>
 <style scoped lang="less">
 .el-table-self {
+  margin: 0.5rem;
+  width: 95%;
   &::before {
     height: 0;
   }
@@ -53,5 +81,9 @@ export default defineComponent({
       height: 0 !important;
     }
   }
+}
+.pagination {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 </style>

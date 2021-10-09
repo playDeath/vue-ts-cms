@@ -1,12 +1,15 @@
 <template>
-  <el-tabs type="border-card">
+  <el-tabs>
     <el-tab-pane>
       <template #label>
         <span><i class="el-icon-date"></i>基本信息</span>
       </template>
       <info-descriptions :info="info"></info-descriptions>
     </el-tab-pane>
-    <el-tab-pane label="货物列表">
+    <el-tab-pane>
+      <template #label>
+        <span><i class="el-icon-goods"></i>货物列表</span>
+      </template>
       <goods-lists :itemList="itemList"></goods-lists>
     </el-tab-pane>
   </el-tabs>
