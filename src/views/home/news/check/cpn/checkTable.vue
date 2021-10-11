@@ -34,7 +34,7 @@
     <el-table-column
       label="发布日期"
       prop="createDate"
-      :formatter="dateFormatter"
+      :formatter="dateFormatterInner"
     >
     </el-table-column>
     <el-table-column label="新闻标题" prop="newsTitle"> </el-table-column>
@@ -77,7 +77,7 @@ import { defineComponent, ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import detailTable from './detailTable.vue'
-import moment from 'moment'
+import { dateFormatterCurrying } from '@/utils/data-transfer'
 export default defineComponent({
   name: '',
   setup() {
@@ -101,12 +101,10 @@ export default defineComponent({
     const closeDialog = () => {
       dialogTableVisible.value = false
     }
-    const dateFormatter = (row: any, column: any, cellValue: string) => {
-      return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD')
-    }
-    const dateFormatterInner = (value: string) => {
-      return !value ? '' : moment(value).format('YYYY-MM-DD')
-    }
+    // const dateFormatter = (row: any, column: any, cellValue: string) => {
+    //   return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD')
+    // }
+    const dateFormatterInner = dateFormatterCurrying('YYYY/MM/DD hh:mm:ss')
     const deleteNews = (index: number, rows: Array<any>) => {
       ElMessageBox.confirm('此操作将永久删除该新闻, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -132,7 +130,7 @@ export default defineComponent({
       updateNews,
       closeDialog,
       deleteNews,
-      dateFormatter,
+      // dateFormatter,
       dateFormatterInner
       // loading
     }

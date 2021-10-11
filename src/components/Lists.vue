@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import moment from 'moment'
+import { dateFormatterCurrying } from '@/utils/data-transfer'
 export default defineComponent({
   name: '',
   props: {
@@ -61,9 +61,7 @@ export default defineComponent({
       }
     }
 
-    const dateFormatter = (row: any, column: any, cellValue: string) => {
-      return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD hh:mm:ss')
-    }
+    const dateFormatter = dateFormatterCurrying('YYYY/MM/DD')
 
     return {
       supplierType,

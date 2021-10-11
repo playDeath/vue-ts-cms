@@ -157,3 +157,8 @@ export function getNowFormatDate(): string {
     date.getSeconds()
   return currentdate
 }
+export const dateFormatterCurrying = (dateType: string) => {
+  return (row: any, column: any, cellValue: string): string => {
+    return !cellValue ? '' : moment(cellValue).format(dateType)
+  }
+}

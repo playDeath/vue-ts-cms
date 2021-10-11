@@ -101,7 +101,6 @@ import { useStore } from 'vuex'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import detailTableShow from './detailTableShow.vue'
 import detailTableEdit from './detailTableEdit.vue'
-import moment from 'moment'
 export default defineComponent({
   name: '',
   setup() {
@@ -133,14 +132,6 @@ export default defineComponent({
     const statusFormatter = (row: any) => {
       if (row.applystatenum === '1') return '生效'
       return '草稿'
-    }
-    const dateFormatter = (
-      row: any,
-      column: any,
-      cellValue: string,
-      index: number
-    ) => {
-      return !cellValue ? '' : moment(cellValue).format('YYYY/MM/DD hh:mm:ss')
     }
     const editContractById = (index: number, rows: Array<any>) => {
       dialogContractVisible.value = true
@@ -179,8 +170,7 @@ export default defineComponent({
       currentChange,
       deleteContractById,
       dialogContractVisible,
-      editContractById,
-      dateFormatter
+      editContractById
       // loading
     }
   },

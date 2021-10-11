@@ -7,7 +7,12 @@
     empty-text="没有数据"
   >
     <el-table-column prop="purchapplyid" label="单据编号"> </el-table-column>
-    <el-table-column prop="operdate" label="操作日期" width="200">
+    <el-table-column
+      prop="operdate"
+      label="操作日期"
+      width="200"
+      :formatter="dateFormatter"
+    >
     </el-table-column>
     <el-table-column prop="coaltype" label="煤种"> </el-table-column>
     <el-table-column prop="jiesuanMode" label="结算方式"> </el-table-column>
@@ -43,6 +48,7 @@
 import { defineComponent, ref, computed } from 'vue'
 import emitter from '@/utils/eventBus'
 import { useStore } from 'vuex'
+import { dateFormatterCurrying } from '@/utils/data-transfer'
 import detailTable from '../../../purchase_apply/review/cpn/detailTable.vue'
 export default defineComponent({
   name: '',
@@ -70,6 +76,7 @@ export default defineComponent({
     const closeDialog = () => {
       dialogTableVisible.value = false
     }
+    const dateFormatter = dateFormatterCurrying('YYYY/MM/DD')
     emitter.on('closePurchaseApplyReviewDialog', closeDialog)
     return {
       size,
@@ -79,7 +86,8 @@ export default defineComponent({
       detailTable,
       dialogTableVisible,
       showDialog,
-      closeDialog
+      closeDialog,
+      dateFormatter
       // loading
     }
   },

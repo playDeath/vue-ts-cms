@@ -46,7 +46,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import moment from 'moment'
+import { dateFormatterCurrying } from '@/utils/data-transfer'
 import { useStore } from 'vuex'
 import detailTable from './detailTable.vue'
 export default defineComponent({
@@ -79,9 +79,7 @@ export default defineComponent({
 
       store.commit('purchaseApply/setPurchaseId', '')
     }
-    const dateFormatter = (row: any, column: any, cellValue: string) => {
-      return !cellValue ? '' : moment(cellValue).format('YYYY-MM-DD')
-    }
+    const dateFormatter = dateFormatterCurrying('YYYY/MM/DD')
     return {
       size,
       total,
